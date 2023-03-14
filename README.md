@@ -1,2 +1,2 @@
-# corbin
+# Corbin
 GUI stack-based interpreter
