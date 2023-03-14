@@ -1,2 +1,2 @@
 # Corbin
-GUI stack-based interpreter
+Stack-based interpreter built in ReactJS
