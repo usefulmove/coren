@@ -36,11 +36,11 @@ export class Commands {
   cmds: Map<string, any> = new Map<string, any>();
 
   constructor() {
-    // nullary operations
+    // simple nullary operations
     this.cmds.set("pi", (stck: Stack): Stack => [...stck, Math.PI.toString()]);
     this.cmds.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
 
-    // unary operations
+    // simple unary operations
     type UnaryOperator = (a: number) => number;
 
     const executeUnaryOp = (op: UnaryOperator): ((stck: Stack) => Stack) => {
@@ -51,16 +51,41 @@ export class Commands {
     };
 
     this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
+    this.cmds.set("floor", executeUnaryOp(Math.floor));
+    this.cmds.set("ceil", executeUnaryOp(Math.ceil));
+    this.cmds.set("round", executeUnaryOp(Math.round));
+    this.cmds.set("abs", executeUnaryOp(Math.abs));
     this.cmds.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
     );
 
-    // binary operations
+    const radToDeg = (a: number): number => (a * 180) / Math.PI;
+    const degToRad = (a: number): number => (a * Math.PI) / 180;
+    this.cmds.set("deg_rad", executeUnaryOp(degToRad));
+    this.cmds.set("rad_deg", executeUnaryOp(radToDeg));
+    this.cmds.set("sin", executeUnaryOp(Math.sin));
+    this.cmds.set("cos", executeUnaryOp(Math.cos));
+    this.cmds.set("tan", executeUnaryOp(Math.tan));
+    this.cmds.set("asin", executeUnaryOp(Math.asin));
+    this.cmds.set("acos", executeUnaryOp(Math.acos));
+    this.cmds.set("atan", executeUnaryOp(Math.atan));
+
+    this.cmds.set(
+      "c_f",
+      executeUnaryOp((a) => (a * 9) / 5 + 32)
+    );
+    this.cmds.set(
+      "f_c",
+      executeUnaryOp((a) => ((a - 32) * 5) / 9)
+    );
+
+    // simple binary operations
     const add = (a: number, b: number): number => a + b;
     const subtract = (a: number, b: number): number => a - b;
     const multiply = (a: number, b: number): number => a * b;
     const divide = (a: number, b: number): number => a / b;
+    const mod = (a: number, b: number): number => a % b;
     const power = (a: number, b: number): number => Math.pow(a, b);
 
     type BinaryOperator = (a: number, b: number) => number;
@@ -76,6 +101,7 @@ export class Commands {
     this.cmds.set("-", executeBinaryOp(subtract));
     this.cmds.set("x", executeBinaryOp(multiply));
     this.cmds.set("/", executeBinaryOp(divide));
+    this.cmds.set("%", executeBinaryOp(mod));
     this.cmds.set("^", executeBinaryOp(power));
 
     // stack operations
@@ -89,6 +115,29 @@ export class Commands {
     this.cmds.set("swap", (stck: Stack): Stack => {
       const [a, b, rest] = getNumber2(stck);
       return [...rest, b, a];
+    });
+
+    // ???
+    this.cmds.set(
+      "sum",
+      (stck: Stack): Stack => [
+        stck.reduce((sum, a) => sum + parseFloat(a), 0).toString(),
+      ]
+    );
+    this.cmds.set(
+      "prod",
+      (stck: Stack): Stack => [
+        stck.reduce((prod, a) => prod * parseFloat(a), 1).toString(),
+      ]
+    );
+    this.cmds.set("io", (stck: Stack): Stack => {
+      // iota
+      // add a list of numbers from 1 to n to the stack
+      const [a, rest] = getNumber(stck);
+      return [
+        ...rest,
+        ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
+      ];
     });
   }
 }
