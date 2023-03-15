@@ -64,30 +64,12 @@ export class Commands {
     const degToRad = (a: number): number => (a * Math.PI) / 180;
     this.cmds.set("deg_rad", executeUnaryOp(degToRad));
     this.cmds.set("rad_deg", executeUnaryOp(radToDeg));
-    this.cmds.set(
-      "sin",
-      executeUnaryOp((a) => Math.sin(degToRad(a)))
-    );
-    this.cmds.set(
-      "cos",
-      executeUnaryOp((a) => Math.cos(degToRad(a)))
-    );
-    this.cmds.set(
-      "tan",
-      executeUnaryOp((a) => Math.tan(degToRad(a)))
-    );
-    this.cmds.set(
-      "asin",
-      executeUnaryOp((a) => radToDeg(Math.asin(a)))
-    );
-    this.cmds.set(
-      "acos",
-      executeUnaryOp((a) => radToDeg(Math.acos(a)))
-    );
-    this.cmds.set(
-      "atan",
-      executeUnaryOp((a) => radToDeg(Math.atan(a)))
-    );
+    this.cmds.set("sin", executeUnaryOp(Math.sin));
+    this.cmds.set("cos", executeUnaryOp(Math.cos));
+    this.cmds.set("tan", executeUnaryOp(Math.tan));
+    this.cmds.set("asin", executeUnaryOp(Math.asin));
+    this.cmds.set("acos", executeUnaryOp(Math.acos));
+    this.cmds.set("atan", executeUnaryOp(Math.atan));
 
     this.cmds.set(
       "c_f",
