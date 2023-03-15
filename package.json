@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/style": "^0.8.0",
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.11.11",
     "ramda": "^0.28.0",
