@@ -24,14 +24,17 @@ export class Commands {
 
       let loadingUserDefinedFunc = false;
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
-        if (this.cmds.has(op)) {
-          if (!loadingUserDefinedFunc) {
-            //TODO
-          }
-
-          return this.cmds.get(op)(interimStack);
-        } else {
-          return [...interimStack, op];
+        switch (this.cmds.has(op)) {
+          case true: // command (known)
+            switch (loadingUserDefinedFunc) {
+              case false: // default (general case)
+                return this.cmds.get(op)(interimStack);
+              case true:
+                // TODO
+                return [...interimStack];
+            }
+          case false: // value (unknown command)
+            return [...interimStack, op];
         }
       }, stck);
 
@@ -144,20 +147,6 @@ export class Commands {
     });
 
     // higher-order functions
-    // store lambda function
-    //this.cmds.set("(", (stck: Stack): Stack => {
-    //  console.log("executing '('");
-    //  console.log({ stck });
-    //  const ind: number = R.findLastIndex((a) => a === ")", stck);
-
-    //  console.log({ ind });
-    //  if (ind === -1) return [...stck];
-
-    //  const [rest, lambda] = [...stck.slice(0, ind), stck.slice(ind + 1)];
-    //  console.log({ lambda });
-    //  //TODO // store lambda function
-
-    //  return [...rest];
-    //});
+    // TODO
   }
 }
