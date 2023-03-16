@@ -2,6 +2,14 @@ import * as R from "../node_modules/ramda/";
 
 type Stack = string[];
 type Op = string;
+type Ops = string[];
+type StackFunction = (input: Stack) => Stack;
+
+const getOp = (stck: Stack): [Op, Stack] => {
+  const op: Op = stck.at(-1);
+  const rest: Stack = stck.slice(0, -1);
+  return [op, rest];
+};
 
 const getNumber = (stck: Stack): [number, Stack] => {
   const n: number = parseFloat(stck.at(-1));
@@ -16,33 +24,66 @@ const getNumber2 = (stck: Stack): [number, number, Stack] => {
 };
 
 export class Commands {
+  cmds = new Map<string, StackFunction>(); // built-in commands
+  userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
+
+  loadingUserDefFunc = false;
+
   // evaluateOps
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack => {
       console.log({ ops, stck });
 
-      let loadingUserDefinedFunc = false;
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
+        console.log({ interimStack, op });
+
         switch (this.cmds.has(op)) {
           case true: // command (known)
-            switch (loadingUserDefinedFunc) {
+            console.log("loading? . . . ", this.loadingUserDefFunc);
+            switch (this.loadingUserDefFunc) {
               case false: // default (general case)
                 return this.cmds.get(op)(interimStack);
               case true:
-                // TODO
+                console.log(`loading user function definition . . . ${op}`);
+                this.loadingUserDefFunc = this.loadUserDefFunc(op);
                 return [...interimStack];
             }
-          case false: // value (unknown command)
-            return [...interimStack, op];
+          case false:
+            return [...interimStack, op]; // value (unknown command)
         }
       }, stck);
 
       return out_st;
     };
 
-  cmds: Map<string, any> = new Map<string, any>();
+  // user-defined functions
+  udfStartChar: string = "(";
+  udfEndChar: string = ")";
 
+  // TODO: troubleshoot closure behavior
+  loadUserDefFunc = (op: Op): boolean => {
+    let instantiated = false;
+    let name: string;
+
+    return (op: Op): boolean => {
+      switch (instantiated) {
+        case false:
+          name = op;
+          this.userCmds.set(name, []);
+          instantiated = true;
+          return true; // continue loading
+        case true:
+          if (op === this.udfEndChar) return false; // stop loading (recording) user function
+
+          this.userCmds.get(name).push(op);
+
+          return true; // continue loading
+      }
+    };
+  };
+
+  // constructor - create built-in commands
   constructor() {
     // simple nullary operations
     this.cmds.set("pi", (stck: Stack): Stack => [...stck, Math.PI.toString()]);
@@ -147,6 +188,10 @@ export class Commands {
     });
 
     // higher-order functions
-    // TODO
+    this.cmds.set(this.udfStartChar, (stck: Stack): Stack => {
+      console.log("here!");
+      this.loadingUserDefFunc = true;
+      return [...stck];
+    });
   }
 }
