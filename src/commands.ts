@@ -22,14 +22,13 @@ export class Commands {
     (stck: Stack): Stack => {
       console.log({ ops, stck });
 
-      const out_st: Stack = R.reduce(
-        (interimStack: Stack, op: Op): Stack =>
-          this.cmds.has(op)
-            ? this.cmds.get(op)(interimStack)
-            : [...interimStack, op],
-        stck,
-        ops
-      );
+      const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
+        if (this.cmds.has(op)) {
+          return this.cmds.get(op)(interimStack);
+        } else {
+          return [...interimStack, op];
+        }
+      }, stck);
 
       return out_st;
     };
