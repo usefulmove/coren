@@ -38,19 +38,29 @@ export class Commands {
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
         console.log({ interimStack, op });
 
-        switch (this.cmds.has(op)) {
-          case true: // command (known)
-            console.log("loading? . . . ", this.loadingUserDefFunc);
-            switch (this.loadingUserDefFunc) {
-              case false: // default (general case)
+        console.log(`loading? {${this.loadingUserDefFunc}}`);
+
+        switch (this.loadingUserDefFunc) {
+          case false: // default (general case)
+            switch (this.cmds.has(op)) {
+              case true: // command (known)
                 return this.cmds.get(op)(interimStack);
-              case true:
-                console.log(`loading user function definition . . . ${op}`);
-                this.loadingUserDefFunc = this.loadUserDefFunc(op);
-                return [...interimStack];
+              case false:
+                if (this.userCmds.has(op)) {
+                  console.log(`executing user function (name=${op})`);
+                  console.log(`$expression={this.userCmds.get(op)}`);
+                  const updatedStck = this.evaluateOps(this.userCmds.get(op))(
+                    interimStack
+                  );
+                  return updatedStck;
+                } else {
+                  return [...interimStack, op]; // value (unknown command)
+                }
             }
-          case false:
-            return [...interimStack, op]; // value (unknown command)
+          case true:
+            console.log(`loading user function definition (op=${op})`);
+            this.loadingUserDefFunc = this.loadUserDefFunc(op);
+            return [...interimStack];
         }
       }, stck);
 
@@ -61,27 +71,28 @@ export class Commands {
   udfStartChar: string = "(";
   udfEndChar: string = ")";
 
-  // TODO: troubleshoot closure behavior
-  loadUserDefFunc = (op: Op): boolean => {
+  loadUserDefFunc = (() => {
     let instantiated = false;
-    let name: string;
+    let name: string = "";
 
     return (op: Op): boolean => {
+      console.log(
+        `running loadUserDefFunc (op=${op}) (instantiated=${instantiated})`
+      );
       switch (instantiated) {
         case false:
           name = op;
+          console.log(`adding user function definition (name=${name})`);
           this.userCmds.set(name, []);
           instantiated = true;
           return true; // continue loading
         case true:
           if (op === this.udfEndChar) return false; // stop loading (recording) user function
-
           this.userCmds.get(name).push(op);
-
           return true; // continue loading
       }
     };
-  };
+  })();
 
   // constructor - create built-in commands
   constructor() {
@@ -189,7 +200,7 @@ export class Commands {
 
     // higher-order functions
     this.cmds.set(this.udfStartChar, (stck: Stack): Stack => {
-      console.log("here!");
+      console.log("setting loadingUserDefFunc to {true}");
       this.loadingUserDefFunc = true;
       return [...stck];
     });
