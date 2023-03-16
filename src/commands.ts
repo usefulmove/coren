@@ -22,8 +22,13 @@ export class Commands {
     (stck: Stack): Stack => {
       console.log({ ops, stck });
 
+      let loadingUserDefinedFunc = false;
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
         if (this.cmds.has(op)) {
+          if (!loadingUserDefinedFunc) {
+            //TODO
+          }
+
           return this.cmds.get(op)(interimStack);
         } else {
           return [...interimStack, op];
@@ -131,8 +136,6 @@ export class Commands {
       ]
     );
     this.cmds.set("io", (stck: Stack): Stack => {
-      // iota
-      // add a list of numbers from 1 to n to the stack
       const [a, rest] = getNumber(stck);
       return [
         ...rest,
