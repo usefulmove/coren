@@ -17,7 +17,7 @@ function App() {
     expr.split(" ").filter((op: Op) => op.length > 0);
 
   const onEnter = (expr: Expr) => {
-    console.log("evaluating expression: ", expr);
+    console.log("evaluating expression = ", expr);
     const ops = exprToOps(expr);
     setOutputStack(C.evaluateOps(ops)(outputStack)); // evaluate expression and set output stack to result
     clearInput(); // clear input field

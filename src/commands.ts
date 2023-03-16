@@ -143,8 +143,19 @@ export class Commands {
 
     // higher-order functions
     // store lambda function
-    //this.cmds.set("[", (stck: Stack): Stack => {
+    //this.cmds.set("(", (stck: Stack): Stack => {
+    //  console.log("executing '('");
+    //  console.log({ stck });
+    //  const ind: number = R.findLastIndex((a) => a === ")", stck);
 
+    //  console.log({ ind });
+    //  if (ind === -1) return [...stck];
+
+    //  const [rest, lambda] = [...stck.slice(0, ind), stck.slice(ind + 1)];
+    //  console.log({ lambda });
+    //  //TODO // store lambda function
+
+    //  return [...rest];
     //});
   }
 }
