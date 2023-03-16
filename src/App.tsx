@@ -28,8 +28,8 @@ function App() {
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h4" className="title" sx={{ color: "#fffdd0" }}>
-          Corbin
+        <Typography variant="h4" className="title" sx={{ color: "#cccaa6" }}>
+          Corben
         </Typography>
       </Grid>
       <Grid item xs={12} container>

@@ -16,6 +16,7 @@ const getNumber2 = (stck: Stack): [number, number, Stack] => {
 };
 
 export class Commands {
+  // evaluateOps
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack => {
@@ -139,5 +140,11 @@ export class Commands {
         ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
       ];
     });
+
+    // higher-order functions
+    // store lambda function
+    //this.cmds.set("[", (stck: Stack): Stack => {
+
+    //});
   }
 }
