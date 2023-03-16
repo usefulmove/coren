@@ -51,7 +51,7 @@ export class Commands {
                   console.log(`$expression={this.userCmds.get(op)}`);
                   const updatedStck = this.evaluateOps(this.userCmds.get(op))(
                     interimStack
-                  );
+                  ); // recursive call to evaluateOps
                   return updatedStck;
                 } else {
                   return [...interimStack, op]; // value (unknown command)
@@ -87,7 +87,11 @@ export class Commands {
           instantiated = true;
           return true; // continue loading
         case true:
-          if (op === this.udfEndChar) return false; // stop loading (recording) user function
+          if (op === this.udfEndChar) {
+            // stop loading (recording) user function
+            instantiated = false; // reset
+            return false;
+          }
           this.userCmds.get(name).push(op);
           return true; // continue loading
       }
