@@ -1,35 +1,37 @@
 import "./App.css";
 import { useState } from "react";
 import { Grid, Typography, TextField, Button } from "@mui/material";
-import { Commands } from "./commands";
+import { Command } from "./command";
 
-type Stack = string[];
-type Ops = string[];
-type Op = string;
-type Expr = string;
-const C = new Commands();
+type Ops = string[]; // array of operations
+type Op = string; // operation
+type Sexpr = string; // S-exression
+const C = new Command();
 
 function App() {
-  const [outputStack, setOutputStack] = useState([]);
-  const [inputField, setInputField] = useState("");
+  const [outputStack: Stack, setOutputStack] = useState([]);
+  const [inputFieldValue, setInputFieldValue] = useState("");
 
-  const exprToOps = (expr: Expr): Ops =>
+  const exprToOps = (expr: Sexpr): Ops =>
     expr.split(" ").filter((op: Op) => op.length > 0);
 
-  const onEnter = (expr: Expr) => {
+  const onEnter = (expr: Sexpr) => {
     console.log("evaluating expression = ", expr);
     const ops = exprToOps(expr);
-    setOutputStack(C.evaluateOps(ops)(outputStack)); // evaluate expression and set output stack to result
+
+    // evaluate expression and set output stack to result
+    setOutputStack(C.evaluateOps(ops)(outputStack));
+
     clearInput(); // clear input field
   };
 
-  const clearInput = () => setInputField("");
+  const clearInput = () => setInputFieldValue("");
 
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" className="title" sx={{ color: "#cccaa6" }}>
-          Corben
+          Coren
         </Typography>
       </Grid>
       <Grid item xs={12} container>
@@ -45,8 +47,8 @@ function App() {
           }}
           focused
           autoFocus
-          value={inputField}
-          onChange={(e) => setInputField(e.target.value)}
+          value={inputFieldValue}
+          onChange={(e) => setInputFieldValue(e.target.value)}
           onKeyDown={(e) => {
             e.key == "Enter" ? onEnter(e.target.value) : {};
           }}

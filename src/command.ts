@@ -1,9 +1,35 @@
-import * as R from "../node_modules/ramda/";
+import * as R from "ramda";
+
+/*
+
+    note: base data structure is an array used as
+    a stack. atoms on the list are either be symbols
+    (commands) or values. each calculation is a list
+    of operations that are processed in order of
+    occurrence. this is an implementation of a list
+    processor (lisp) for reverse polish notation
+    s-expressions (sexp).
+
+      operations list structure
+        ( object : command or value )
+        "5"
+        "sqrt"
+        "1
+        "-"
+        "2"
+        "/"
+
+    a list evaluation engine takes the list of
+    strings and executes the corresponding oper-
+    ations then returns the resulting mutated
+    stack.
+
+*/
 
 type Stack = string[];
 type Op = string;
 type Ops = string[];
-type StackFunction = (input: Stack) => Stack;
+type StackFn = (input: Stack) => Stack;
 
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = stck.at(-1);
@@ -23,8 +49,8 @@ const getNumber2 = (stck: Stack): [number, number, Stack] => {
   return [a, b, rest];
 };
 
-export class Commands {
-  cmds = new Map<string, StackFunction>(); // built-in commands
+export class Command {
+  cmds = new Map<string, StackFn>(); // built-in commands
   userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
@@ -115,14 +141,23 @@ export class Commands {
       };
     };
 
+    this.cmds.set(
+      "chs",
+      executeUnaryOp((a: number) => -a)
+    );
     this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
     this.cmds.set("floor", executeUnaryOp(Math.floor));
     this.cmds.set("ceil", executeUnaryOp(Math.ceil));
     this.cmds.set("round", executeUnaryOp(Math.round));
     this.cmds.set("abs", executeUnaryOp(Math.abs));
+    this.cmds.set("sgn", executeUnaryOp(Math.sign));
     this.cmds.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
+    );
+    this.cmds.set(
+      "!",
+      executeUnaryOp((a: number) => R.product(R.range(1, a)))
     );
 
     const radToDeg = (a: number): number => (a * 180) / Math.PI;
