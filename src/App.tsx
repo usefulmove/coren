@@ -44,6 +44,7 @@ function App() {
             width: "100%",
           }}
           focused
+          autoFocus
           value={inputField}
           onChange={(e) => setInputField(e.target.value)}
           onKeyDown={(e) => {
