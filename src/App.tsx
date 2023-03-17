@@ -56,11 +56,11 @@ function App() {
           <div key={i}>
             <Typography
               component="span"
-              color={"#000000"}
+              color={"#404040"}
               align="left"
-              sx={{ fontSize: "12px", fontFamily: "Monospace" }}
+              sx={{ fontSize: "14px", fontFamily: "Monospace" }}
             >
-              {i + 1}.{"  "}
+              {i + 1}.{" "}
             </Typography>
             <Typography
               variant="h6"

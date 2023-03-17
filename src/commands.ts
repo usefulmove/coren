@@ -68,6 +68,7 @@ export class Commands {
     };
 
   // user-defined functions
+  lambdaChar: string = "_";
   udfStartChar: string = "(";
   udfEndChar: string = ")";
 
@@ -207,6 +208,13 @@ export class Commands {
       console.log("setting loadingUserDefFunc to {true}");
       this.loadingUserDefFunc = true;
       return [...stck];
+    });
+
+    this.cmds.set("map", (stck: Stack): Stack => {
+      const outStck: Stack = stck
+        .map((a) => this.evaluateOps(this.userCmds.get("_"))([a]))
+        .flat();
+      return outStck;
     });
   }
 }
