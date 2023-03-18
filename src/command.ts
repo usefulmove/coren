@@ -37,23 +37,30 @@ const getOp = (stck: Stack): [Op, Stack] => {
   return [op, rest];
 };
 
-const getNumber = (stck: Stack): [number, Stack] => {
-  const n: number = parseFloat(stck.at(-1));
-  const rest: Stack = stck.slice(0, -1);
-  return [n, rest];
+const getNumber = (stck: Stack): [Stack, number] => {
+  const n: number = parseFloat(R.takeLast(1, stck));
+  const rest: Stack = R.dropLast(1, stck);
+  return [rest, n];
 };
 
-const getNumber2 = (stck: Stack): [number, number, Stack] => {
-  const [b, restb] = getNumber(stck);
-  const [a, rest] = getNumber(restb);
-  return [a, b, rest];
+const getNumber2 = (stck: Stack): [Stack, number, number] => {
+  const [restb, b] = getNumber(stck);
+  const [rest, a] = getNumber(restb);
+  return [rest, a, b];
 };
 
 export class Command {
   cmds = new Map<string, StackFn>(); // built-in commands
-  userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
+  userCmds = new Map<string, Ops>([
+    ["cube", ["dup", "dup", "x", "x"]],
+    ["area", ["113.04"]],
+  ]); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
+
+  // user-defined functions
+  public userCommands: string[] = [];
+  userCommands: string[] = [...this.userCmds.keys()].filter((x) => x !== "_");
 
   // evaluateOps
   public evaluateOps =
@@ -67,14 +74,14 @@ export class Command {
         console.log(`loading? {${this.loadingUserDefFunc}}`);
 
         switch (this.loadingUserDefFunc) {
-          case false: // default (general case)
+          case false: // default (general case) - not loading user function
             switch (this.cmds.has(op)) {
               case true: // command (known)
                 return this.cmds.get(op)(interimStack);
               case false:
                 if (this.userCmds.has(op)) {
                   console.log(`executing user function (name=${op})`);
-                  console.log(`$expression={this.userCmds.get(op)}`);
+                  //console.log(`$expression={this.userCmds.get(op)}`);
                   const updatedStck = this.evaluateOps(this.userCmds.get(op))(
                     interimStack
                   ); // recursive call to evaluateOps
@@ -132,11 +139,13 @@ export class Command {
     this.cmds.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
 
     // simple unary operations -------------------------------------------------
+    // take a single number from the stack and apply a unary operation and
+    // return a single number result to the top of stack
     type UnaryOperator = (a: number) => number;
 
     const executeUnaryOp = (op: UnaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
-        const [a, rest] = getNumber(stck);
+        const [rest, a] = getNumber(stck);
         return [...rest, op(parseFloat(a)).toString()];
       };
     };
@@ -206,39 +215,34 @@ export class Command {
     //);
 
     // simple binary operations ------------------------------------------------
-    const add = (a: number, b: number): number => a + b;
-    const subtract = (a: number, b: number): number => a - b;
-    const multiply = (a: number, b: number): number => a * b;
-    const divide = (a: number, b: number): number => a / b;
-    const mod = (a: number, b: number): number => a % b;
-    const power = (a: number, b: number): number => Math.pow(a, b);
-
+    // take two numbers from the stack and apply a binary operation and return
+    // a single number result to the top of stack
     type BinaryOperator = (a: number, b: number) => number;
 
     const executeBinaryOp = (op: BinaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
-        const [a, b, rest] = getNumber2(stck);
+        const [rest, a, b] = getNumber2(stck);
         return [...rest, op(parseFloat(a), parseFloat(b)).toString()];
       };
     };
 
-    this.cmds.set("+", executeBinaryOp(add));
-    this.cmds.set("-", executeBinaryOp(subtract));
-    this.cmds.set("x", executeBinaryOp(multiply));
-    this.cmds.set("/", executeBinaryOp(divide));
-    this.cmds.set("%", executeBinaryOp(mod));
-    this.cmds.set("^", executeBinaryOp(power));
+    this.cmds.set("+", executeBinaryOp(R.add));
+    this.cmds.set("-", executeBinaryOp(R.subtract));
+    this.cmds.set("x", executeBinaryOp(R.multiply));
+    this.cmds.set("/", executeBinaryOp(R.divide));
+    this.cmds.set("%", executeBinaryOp(R.modulo));
+    this.cmds.set("^", executeBinaryOp(Math.pow));
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
     this.cmds.set("dup", (stck: Stack): Stack => [...stck, stck.at(-1)]);
     this.cmds.set("drop", (stck: Stack): Stack => [...stck.slice(0, -1)]);
     this.cmds.set("dropn", (stck: Stack): Stack => {
-      const [a, rest] = getNumber(stck);
+      const [rest, a] = getNumber(stck);
       return [...rest.slice(0, -a)];
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
-      const [a, b, rest] = getNumber2(stck);
+      const [rest, a, b] = getNumber2(stck);
       return [...rest, b, a];
     });
 
@@ -256,11 +260,20 @@ export class Command {
       ]
     );
     this.cmds.set("io", (stck: Stack): Stack => {
-      const [a, rest] = getNumber(stck);
+      const [rest, a] = getNumber(stck);
       return [
         ...rest,
         ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
       ];
+    });
+
+    // user storage ------------------------------------------------------------
+    this.cmds.set("store", (stck: Stack): Stack => {
+      const [value, name] = R.takeLast(2, stck);
+      const rest = R.dropLast(2, stck);
+      console.log("store cmd", { name, value, rest });
+      this.userCmds.set(name, [value]);
+      return rest;
     });
 
     // higher-order functions --------------------------------------------------

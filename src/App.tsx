@@ -33,8 +33,11 @@ function App() {
         <Typography variant="h4" className="title" sx={{ color: "#cccaa6" }}>
           Coren
         </Typography>
+        <Typography variant="body2" color="#000000">
+          ( ver. 0.0.3 )
+        </Typography>
       </Grid>
-      <Grid item xs={12} container>
+      <Grid item xs={12}>
         <TextField
           id="expression"
           label="expression"
@@ -54,31 +57,51 @@ function App() {
           }}
         />
       </Grid>
+      <Grid item xs={2}></Grid>
+      <Grid item xs={8}>
+        <>
+          <Typography
+            variant="subtitle1"
+            color="#fffdd0"
+            sx={{ fontFamily: "Monospace" }}
+          >
+            {outputStack.length === 0 ? "( stack empty )" : ""}
+          </Typography>
+          {[...outputStack].reverse().map((entry, i) => (
+            <div key={i}>
+              <Typography
+                component="span"
+                color={"#444444"}
+                align="left"
+                sx={{ fontSize: "14px", fontFamily: "Monospace" }}
+              >
+                {i + 1}.{" "}
+              </Typography>
+              <Typography
+                variant="h6"
+                component="span"
+                color={i === 0 ? "#fffdd0" : "#0080ff"}
+                sx={{ fontFamily: "Monospace" }}
+                align="left"
+              >
+                {entry}
+              </Typography>
+            </div>
+          ))}
+        </>
+      </Grid>
+      <Grid item xs={2}>
+        {C.userCommands.map((cmd) => {
+          return (
+            <Typography key={cmd} color="#000000" sx={{ fontSize: 16 }}>
+              {cmd}
+            </Typography>
+          );
+        })}
+      </Grid>
       <Grid item xs={12}>
-        {[...outputStack].reverse().map((entry, i) => (
-          <div key={i}>
-            <Typography
-              component="span"
-              color={"#404040"}
-              align="left"
-              sx={{ fontSize: "14px", fontFamily: "Monospace" }}
-            >
-              {i + 1}.{" "}
-            </Typography>
-            <Typography
-              variant="h6"
-              component="span"
-              color={i === 0 ? "#fffdd0" : "#0080ff"}
-              sx={{ fontFamily: "Monospace" }}
-              align="left"
-            >
-              {entry}
-            </Typography>
-          </div>
-        ))}
-        <br />
         <Typography variant="body2" color="#000000">
-          ( ver. 0.0.3 )
+          ( Refresh page to clear all. Enter `cls` to clear stack. )
         </Typography>
       </Grid>
     </Grid>
