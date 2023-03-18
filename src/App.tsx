@@ -9,7 +9,7 @@ type Sexpr = string; // S-exression
 const C = new Command();
 
 function App() {
-  const [outputStack: Stack, setOutputStack] = useState([]);
+  const [outputStack, setOutputStack] = useState([]);
   const [inputFieldValue, setInputFieldValue] = useState("");
 
   const exprToOps = (expr: Sexpr): Ops =>
