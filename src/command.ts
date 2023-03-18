@@ -127,11 +127,11 @@ export class Command {
 
   // constructor - create built-in commands
   constructor() {
-    // simple nullary operations
+    // simple nullary operations -----------------------------------------------
     this.cmds.set("pi", (stck: Stack): Stack => [...stck, Math.PI.toString()]);
     this.cmds.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
 
-    // simple unary operations
+    // simple unary operations -------------------------------------------------
     type UnaryOperator = (a: number) => number;
 
     const executeUnaryOp = (op: UnaryOperator): ((stck: Stack) => Stack) => {
@@ -171,6 +171,7 @@ export class Command {
     this.cmds.set("acos", executeUnaryOp(Math.acos));
     this.cmds.set("atan", executeUnaryOp(Math.atan));
 
+    // conversions
     this.cmds.set(
       "c_f",
       executeUnaryOp((a) => (a * 9) / 5 + 32)
@@ -179,8 +180,32 @@ export class Command {
       "f_c",
       executeUnaryOp((a) => ((a - 32) * 5) / 9)
     );
+    this.cmds.set(
+      "dec_hex",
+      executeUnaryOp((a) => a.toString(16))
+    );
+    //this.cmds.set(
+    //  "hex_dec",
+    //  executeUnaryOp((a) => parseInt(a.toString(), 16))
+    //);
+    this.cmds.set(
+      "dec_bin",
+      executeUnaryOp((a) => a.toString(2))
+    );
+    //this.cmds.set(
+    //  "bin_dec",
+    //  executeUnaryOp((a) => parseInt(a.toString(), 2))
+    //);
+    this.cmds.set(
+      "dec_oct",
+      executeUnaryOp((a) => a.toString(8))
+    );
+    //this.cmds.set(
+    //  "oct_dec",
+    //  executeUnaryOp((a) => parseInt(a.toString(), 8))
+    //);
 
-    // simple binary operations
+    // simple binary operations ------------------------------------------------
     const add = (a: number, b: number): number => a + b;
     const subtract = (a: number, b: number): number => a - b;
     const multiply = (a: number, b: number): number => a * b;
@@ -238,7 +263,7 @@ export class Command {
       ];
     });
 
-    // higher-order functions
+    // higher-order functions --------------------------------------------------
     this.cmds.set(this.udfStartChar, (stck: Stack): Stack => {
       console.log("setting loadingUserDefFunc to {true}");
       this.loadingUserDefFunc = true;
