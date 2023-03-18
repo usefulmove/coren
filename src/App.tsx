@@ -73,7 +73,7 @@ function App() {
                 component="span"
                 color={"#444444"}
                 align="left"
-                sx={{ fontSize: "14px", fontFamily: "Monospace" }}
+                sx={{ fontSize: 14, fontFamily: "Monospace" }}
               >
                 {i + 1}.{" "}
               </Typography>
