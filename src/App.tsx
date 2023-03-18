@@ -62,7 +62,7 @@ function App() {
         <>
           <Typography
             variant="subtitle1"
-            color="#fffdd0"
+            color="#cccaa6"
             sx={{ fontFamily: "Monospace" }}
           >
             {outputStack.length === 0 ? "( stack empty )" : ""}
@@ -80,7 +80,7 @@ function App() {
               <Typography
                 variant="h6"
                 component="span"
-                color={i === 0 ? "#fffdd0" : "#0080ff"}
+                color={i === 0 ? "secondary" : "primary"}
                 sx={{ fontFamily: "Monospace" }}
                 align="left"
               >
