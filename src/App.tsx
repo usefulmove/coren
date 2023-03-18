@@ -100,7 +100,7 @@ function App() {
         })}
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="body2" color="#000000">
+        <Typography color="#000000" sx={{ fontSize: 20 }}>
           ( Refresh page to clear all. Enter `cls` to clear stack. )
         </Typography>
       </Grid>
