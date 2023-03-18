@@ -32,8 +32,8 @@ type Ops = string[];
 type StackFn = (input: Stack) => Stack;
 
 const getOp = (stck: Stack): [Op, Stack] => {
-  const op: Op = stck.at(-1);
-  const rest: Stack = stck.slice(0, -1);
+  const op: Op = R.takeLast(1, stck);
+  const rest: Stack = R.dropLast(1, stck);
   return [op, rest];
 };
 
@@ -235,11 +235,14 @@ export class Command {
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
-    this.cmds.set("dup", (stck: Stack): Stack => [...stck, stck.at(-1)]);
-    this.cmds.set("drop", (stck: Stack): Stack => [...stck.slice(0, -1)]);
+    this.cmds.set(
+      "dup",
+      (stck: Stack): Stack => [...stck, ...R.takeLast(1, stck)]
+    );
+    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1, stck));
     this.cmds.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getNumber(stck);
-      return [...rest.slice(0, -a)];
+      return R.dropLast(a, rest);
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
       const [rest, a, b] = getNumber2(stck);
