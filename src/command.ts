@@ -236,6 +236,10 @@ export class Command {
     this.cmds.set("/", executeBinaryOp(R.divide));
     this.cmds.set("%", executeBinaryOp(R.modulo));
     this.cmds.set("^", executeBinaryOp(Math.pow));
+    this.cmds.set(
+      "nroot",
+      executeBinaryOp((a, b) => Math.pow(a, 1 / b))
+    );
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
@@ -251,24 +255,24 @@ export class Command {
     this.cmds.set("roll", (stck: Stack): Stack => {
       const a = R.takeLast(1)(stck);
       const rest = R.dropLast(1)(stck);
-      return [...a, ...rest] as Stck;
+      return [...a, ...rest] as Stack;
     });
     this.cmds.set("rolln", (stck: Stack): Stack => {
       const [rest, n] = getNumber(stck);
       const top = R.takeLast(n)(rest);
       const bottom = R.dropLast(n)(rest);
-      return [...top, ...bottom] as Stck;
+      return [...top, ...bottom] as Stack;
     });
     this.cmds.set("rot", (stck: Stack): Stack => {
       const a = R.take(1)(stck);
       const rest = R.drop(1)(stck);
-      return [...rest, ...a] as Stck;
+      return [...rest, ...a] as Stack;
     });
     this.cmds.set("rotn", (stck: Stack): Stack => {
       const [rest, n] = getNumber(stck);
       const bottom = R.take(n)(rest);
       const top = R.drop(n)(rest);
-      return [...top, ...bottom] as Stck;
+      return [...top, ...bottom] as Stack;
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
       const [a, b] = R.takeLast(2)(stck);

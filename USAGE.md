@@ -417,12 +417,12 @@ c0 hex_bin
 
 ### temperature conversion (Fahrenheit, Celsius)
 ```
-212 F_C
+212 f_c
   100
 ```
 
 ```
-0 C_F
+0 c_f
   32
 ```
 
