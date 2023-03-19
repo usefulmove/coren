@@ -32,14 +32,14 @@ type Ops = string[];
 type StackFn = (input: Stack) => Stack;
 
 const getOp = (stck: Stack): [Op, Stack] => {
-  const op: Op = R.takeLast(1, stck);
-  const rest: Stack = R.dropLast(1, stck);
+  const op: Op = R.takeLast(1)(stck);
+  const rest: Stack = R.dropLast(1)(stck);
   return [op, rest];
 };
 
 const getNumber = (stck: Stack): [Stack, number] => {
-  const n: number = parseFloat(R.takeLast(1, stck));
-  const rest: Stack = R.dropLast(1, stck);
+  const n: number = parseFloat(R.takeLast(1)(stck));
+  const rest: Stack = R.dropLast(1)(stck);
   return [rest, n];
 };
 
@@ -162,7 +162,7 @@ export class Command {
     );
     this.cmds.set(
       "!",
-      executeUnaryOp((a: number) => R.product(R.range(1, a)))
+      executeUnaryOp((a: number) => R.product(R.range(1)(a)))
     );
 
     const radToDeg = (a: number): number => (a * 180) / Math.PI;
@@ -233,12 +233,12 @@ export class Command {
     this.cmds.set("cls", (stck: Stack): Stack => []);
     this.cmds.set(
       "dup",
-      (stck: Stack): Stack => [...stck, ...R.takeLast(1, stck)]
+      (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
     );
-    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1, stck));
+    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck));
     this.cmds.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getNumber(stck);
-      return R.dropLast(a, rest);
+      return R.dropLast(a)(rest);
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
       const [rest, a, b] = getNumber2(stck);
@@ -268,8 +268,8 @@ export class Command {
 
     // user storage ------------------------------------------------------------
     this.cmds.set("store", (stck: Stack): Stack => {
-      const [value, name] = R.takeLast(2, stck);
-      const rest = R.dropLast(2, stck);
+      const [value, name] = R.takeLast(2)(stck);
+      const rest = R.dropLast(2)(stck);
       console.log("store cmd", { name, value, rest });
       this.userCmds.set(name, [value]);
       return rest;
