@@ -1,7 +1,8 @@
 import "./App.css";
 import { useState } from "react";
-import { Grid, Typography, TextField, Button } from "@mui/material";
+import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { Command } from "./command";
+import { HelpOutline } from "@mui/icons-material";
 
 type Ops = string[]; // array of operations
 type Op = string; // operation
@@ -33,14 +34,15 @@ function App() {
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h4" className="title" sx={{ color: "#cccaa6" }}>
+        <Typography variant="h4" className="title" color="secondary">
           Coren
         </Typography>
         <Typography variant="body2" color="#000000">
           ( ver. 0.0.3 )
         </Typography>
       </Grid>
-      <Grid item xs={12}>
+      <Grid item xs={1}></Grid>
+      <Grid item xs={10}>
         <TextField
           id="expression"
           label="expression"
@@ -60,8 +62,9 @@ function App() {
           }}
         />
       </Grid>
-      <Grid item xs={2}></Grid>
-      <Grid item xs={8}>
+      <Grid item xs={1}></Grid>
+      <Grid item xs={1}></Grid>
+      <Grid item xs={10}>
         <>
           <Typography
             variant="subtitle1"
@@ -93,10 +96,10 @@ function App() {
           ))}
         </>
       </Grid>
-      <Grid item xs={2}>
+      <Grid item xs={1}>
         {userCmdList.map((cmd) => {
           return (
-            <Typography key={cmd} color="#fff670" sx={{ fontSize: 16 }}>
+            <Typography key={cmd} color="secondary" sx={{ fontSize: 16 }}>
               {cmd}
             </Typography>
           );
@@ -106,6 +109,11 @@ function App() {
         <Typography color="#000000" sx={{ fontSize: 20 }}>
           ( Refresh page to clear all. Enter `cls` to clear stack. )
         </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <IconButton>
+          <HelpOutline color="secondary" />
+        </IconButton>
       </Grid>
     </Grid>
   );
