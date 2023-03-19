@@ -11,6 +11,7 @@ const C = new Command();
 function App() {
   const [outputStack, setOutputStack] = useState([]);
   const [inputFieldValue, setInputFieldValue] = useState("");
+  const [userCmdList, setUserCmdList] = useState([]);
 
   const exprToOps = (expr: Sexpr): Ops =>
     expr.split(" ").filter((op: Op) => op.length > 0);
@@ -23,6 +24,8 @@ function App() {
     setOutputStack(C.evaluateOps(ops)(outputStack));
 
     clearInput(); // clear input field
+
+    setUserCmdList(C.getUserCmdNames());
   };
 
   const clearInput = () => setInputFieldValue("");
@@ -91,9 +94,9 @@ function App() {
         </>
       </Grid>
       <Grid item xs={2}>
-        {C.userCommandNames.map((cmd) => {
+        {userCmdList.map((cmd) => {
           return (
-            <Typography key={cmd} color="#000000" sx={{ fontSize: 16 }}>
+            <Typography key={cmd} color="#fff670" sx={{ fontSize: 16 }}>
               {cmd}
             </Typography>
           );

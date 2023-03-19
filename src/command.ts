@@ -51,16 +51,12 @@ const getNumber2 = (stck: Stack): [Stack, number, number] => {
 
 export class Command {
   cmds = new Map<string, StackFn>(); // built-in commands
-  userCmds = new Map<string, Ops>([
-    ["cube", ["dup", "dup", "x", "x"]],
-    ["area", ["113.04"]],
-  ]); // user-defined and anonymous functions
+  userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
 
   // user-defined functions
-  public userCommandNames: string[] = [];
-  userCommandNames: string[] = [...this.userCmds.keys()].filter((x) => x !== "_");
+  public getUserCmdNames = (): string[] => [...this.userCmds.keys()].filter((x) => x !== "_");
 
   // evaluateOps
   public evaluateOps =
