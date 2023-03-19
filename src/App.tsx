@@ -91,7 +91,7 @@ function App() {
         </>
       </Grid>
       <Grid item xs={2}>
-        {C.userCommands.map((cmd) => {
+        {C.userCommandNames.map((cmd) => {
           return (
             <Typography key={cmd} color="#000000" sx={{ fontSize: 16 }}>
               {cmd}

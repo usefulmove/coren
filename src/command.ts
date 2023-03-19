@@ -59,8 +59,8 @@ export class Command {
   loadingUserDefFunc = false;
 
   // user-defined functions
-  public userCommands: string[] = [];
-  userCommands: string[] = [...this.userCmds.keys()].filter((x) => x !== "_");
+  public userCommandNames: string[] = [];
+  userCommandNames: string[] = [...this.userCmds.keys()].filter((x) => x !== "_");
 
   // evaluateOps
   public evaluateOps =
