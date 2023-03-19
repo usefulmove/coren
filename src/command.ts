@@ -154,20 +154,24 @@ export class Command {
       };
     };
 
+    this.cmds.set("abs", executeUnaryOp(Math.abs));
     this.cmds.set(
       "chs",
       executeUnaryOp((a: number) => -a)
     );
-    this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
     this.cmds.set("floor", executeUnaryOp(Math.floor));
     this.cmds.set("ceil", executeUnaryOp(Math.ceil));
-    this.cmds.set("round", executeUnaryOp(Math.round));
-    this.cmds.set("abs", executeUnaryOp(Math.abs));
-    this.cmds.set("sgn", executeUnaryOp(Math.sign));
     this.cmds.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
     );
+    this.cmds.set("ln", executeUnaryOp(Math.log));
+    this.cmds.set("log", executeUnaryOp(Math.log10));
+    this.cmds.set("log2", executeUnaryOp(Math.log2));
+    this.cmds.set("log10", executeUnaryOp(Math.log10));
+    this.cmds.set("round", executeUnaryOp(Math.round));
+    this.cmds.set("sgn", executeUnaryOp(Math.sign));
+    this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
     this.cmds.set(
       "!",
       executeUnaryOp((a: number) => R.product(R.range(1)(a)))
@@ -252,9 +256,17 @@ export class Command {
     this.cmds.set("/", executeBinaryOp(R.divide));
     this.cmds.set("%", executeBinaryOp(R.modulo));
     this.cmds.set("^", executeBinaryOp(Math.pow));
+    this.cmds.set("min", executeBinaryOp(Math.min));
+    this.cmds.set("max", executeBinaryOp(Math.max));
     this.cmds.set(
       "nroot",
       executeBinaryOp((a, b) => Math.pow(a, 1 / b))
+    );
+    const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
+    this.cmds.set("gcd" as string, executeBinaryOp(gcd));
+    this.cmds.set(
+      "logn",
+      executeBinaryOp((a, b) => Math.log(a) / Math.log(b))
     );
 
     // stack operations
