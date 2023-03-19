@@ -194,6 +194,22 @@ export class Command {
       executeUnaryOp((a) => ((a - 32) * 5) / 9)
     );
     this.cmds.set(
+      "mi_km",
+      executeUnaryOp((a) => a * 1.60934)
+    );
+    this.cmds.set(
+      "km_mi",
+      executeUnaryOp((a) => a / 1.60934)
+    );
+    this.cmds.set(
+      "m_ft",
+      executeUnaryOp((a) => a * 3.28084)
+    );
+    this.cmds.set(
+      "ft_m",
+      executeUnaryOp((a) => a / 3.28084)
+    );
+    this.cmds.set(
       "dec_hex",
       executeUnaryOp((a) => parseInt(a.toString(16)))
     );

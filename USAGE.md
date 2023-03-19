@@ -438,79 +438,17 @@ c0 hex_bin
 
 
 ---
-## Commands (file usage)
-
-### -f option (also --file)
-The file flag allows the use of commands defined within a source file.
-```
--f <filepath>
-```
-
-
----
 ## Commands (user-defined functions)
 
 ### function definition
 User-defined functions can be defined by indicating the start of a function with an open parenthesis `(` symbol followed by the function name then a list of operations and terminated with the close parenthesis `)` symbol. The user function is executed by calling the function name as shown in the examples below.
-
-( Note that on many systems, at the command prompt the parentheses must be escaped as shown the examples below. This is not necessary for functions defined within files. )
 ```
-\( square dup x \) 16 square
+( square dup x ) 16 square
   256
 ```
 ```
-\( double 2 x \) 250 double
+( double 2 x ) 250 double
   500
-```
-
-Note that functions are most useful when combined with the `-f` file option. The cube function can be defined and executed in a source file and passed to the comp command using the file option.
-```
-{ cube.cm }
-{ note - comments are identified inside curly brackets.
-  there must be whitespace surrounding each bracket.
-  multiline comments are supported. }
-
-( cube
-  3 ^
-)
-
-8 cube
-```
-```
--f cube.cm
-  512
-```
-
-Functions also can be defined in a file and used in operations passed after the file has been processed.
-```
-{ temperature.cm }
-
-( ctof
-  9 x 5 /
-  32 +
-)
-
-( ftoc
-  32 -
-  5 x 9 /
-)
-```
-```
--f temperature.cm 0 ctof
-  32
-```
-
-A version of a recursive factorial function that takes an integer argument is below.
-```
-( factorial
-  dup 1
-  ifeq
-    drop
-    1
-  else
-    dup 1 - factorial x
-  fi
-)
 ```
 
 
@@ -526,11 +464,6 @@ map an anonymous function to each of the stack elements
   27
   64
   125
-  216
-  343
-  512
-  729
-  1000
 ```
 
 **Note: Commands that manipulate the entire stack (such as `sum`, `prod`, `cls`) cannot be used in anonymous functions passed to higher-order functions.
