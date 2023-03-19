@@ -30,7 +30,6 @@ Thumbs.db
 # TypeScript
 *.tsbuildinfo
 *.js.map
-*.d.ts
 
 # Test output
 /coverage
