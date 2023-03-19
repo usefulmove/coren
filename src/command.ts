@@ -32,14 +32,14 @@ type Ops = string[];
 type StackFn = (input: Stack) => Stack;
 
 const getOp = (stck: Stack): [Op, Stack] => {
-  const op: Op = R.takeLast(1)(stck);
-  const rest: Stack = R.dropLast(1)(stck);
+  const op: Op = R.takeLast(1)(stck)[0];
+  const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [op, rest];
 };
 
 const getNumber = (stck: Stack): [Stack, number] => {
-  const n: number = parseFloat(R.takeLast(1)(stck));
-  const rest: Stack = R.dropLast(1)(stck);
+  const n: number = parseFloat(R.takeLast(1)(stck)[0]);
+  const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [rest, n];
 };
 
@@ -73,12 +73,12 @@ export class Command {
           case false: // default (general case) - not loading user function
             switch (this.cmds.has(op)) {
               case true: // command (known)
-                return this.cmds.get(op)(interimStack);
+                return this.cmds.get(op)!(interimStack)!;
               case false:
                 if (this.userCmds.has(op)) {
                   console.log(`executing user function (name=${op})`);
                   //console.log(`$expression={this.userCmds.get(op)}`);
-                  const updatedStck = this.evaluateOps(this.userCmds.get(op))(
+                  const updatedStck = this.evaluateOps(this.userCmds.get(op)!)(
                     interimStack
                   ); // recursive call to evaluateOps
                   return updatedStck;
@@ -122,7 +122,7 @@ export class Command {
             instantiated = false; // reset
             return false;
           }
-          this.userCmds.get(name).push(op);
+          this.userCmds.get(name)!.push(op);
           return true; // continue loading
       }
     };
@@ -142,7 +142,7 @@ export class Command {
     const executeUnaryOp = (op: UnaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
         const [rest, a] = getNumber(stck);
-        return [...rest, op(parseFloat(a)).toString()];
+        return [...rest, op(a).toString()];
       };
     };
 
@@ -187,7 +187,7 @@ export class Command {
     );
     this.cmds.set(
       "dec_hex",
-      executeUnaryOp((a) => a.toString(16))
+      executeUnaryOp((a) => parseInt(a.toString(16)))
     );
     //this.cmds.set(
     //  "hex_dec",
@@ -195,7 +195,7 @@ export class Command {
     //);
     this.cmds.set(
       "dec_bin",
-      executeUnaryOp((a) => a.toString(2))
+      executeUnaryOp((a) => parseInt(a.toString(2)))
     );
     //this.cmds.set(
     //  "bin_dec",
@@ -203,7 +203,7 @@ export class Command {
     //);
     this.cmds.set(
       "dec_oct",
-      executeUnaryOp((a) => a.toString(8))
+      executeUnaryOp((a) => parseInt(a.toString(8)))
     );
     //this.cmds.set(
     //  "oct_dec",
@@ -218,7 +218,7 @@ export class Command {
     const executeBinaryOp = (op: BinaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
         const [rest, a, b] = getNumber2(stck);
-        return [...rest, op(parseFloat(a), parseFloat(b)).toString()];
+        return [...rest, op(a, b).toString()];
       };
     };
 
@@ -235,13 +235,14 @@ export class Command {
       "dup",
       (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
     );
-    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck));
+    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck) as Stack);
     this.cmds.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getNumber(stck);
-      return R.dropLast(a)(rest);
+      return R.dropLast(a)(rest) as Stack;
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
-      const [rest, a, b] = getNumber2(stck);
+      const [a, b] = R.takeLast(2)(stck);
+      const rest: Stack = R.dropLast(2)(stck) as Stack;
       return [...rest, b, a];
     });
 
@@ -269,7 +270,7 @@ export class Command {
     // user storage ------------------------------------------------------------
     this.cmds.set("store", (stck: Stack): Stack => {
       const [value, name] = R.takeLast(2)(stck);
-      const rest = R.dropLast(2)(stck);
+      const rest: Stack = R.dropLast(2)(stck) as Stack;
       console.log("store cmd", { name, value, rest });
       this.userCmds.set(name, [value]);
       return rest;
@@ -284,7 +285,7 @@ export class Command {
 
     this.cmds.set("map", (stck: Stack): Stack => {
       const outStck: Stack = stck
-        .map((a) => this.evaluateOps(this.userCmds.get("_"))([a]))
+        .map((a) => this.evaluateOps(this.userCmds.get("_")!)([a]))
         .flat();
       return outStck;
     });
