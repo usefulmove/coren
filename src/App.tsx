@@ -10,9 +10,9 @@ type Sexpr = string; // S-exression
 const C = new Command();
 
 function App() {
-  const [outputStack, setOutputStack] = useState([]);
+  const [outputStack, setOutputStack] = useState<string[]>([]);
   const [inputFieldValue, setInputFieldValue] = useState("");
-  const [userCmdList, setUserCmdList] = useState([]);
+  const [userCmdList, setUserCmdList] = useState<string[]>([]);
 
   const exprToOps = (expr: Sexpr): Ops =>
     expr.split(" ").filter((op: Op) => op.length > 0);
@@ -58,7 +58,7 @@ function App() {
           value={inputFieldValue}
           onChange={(e) => setInputFieldValue(e.target.value)}
           onKeyDown={(e) => {
-            e.key == "Enter" ? onEnter(e.target.value) : {};
+            e.key == "Enter" ? onEnter((e.target as HTMLInputElement).value) : {};
           }}
         />
       </Grid>
