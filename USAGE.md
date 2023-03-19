@@ -32,19 +32,6 @@ drop n elements from the top of the stack
   2
 ```
 
-### take / taken
-take the element from the top of the stack
-```
-3 4 take
-  4
-```
-take n elements from the top of the stack
-```
-1 2 3 4 2 taken
-  3
-  4
-```
-
 ### duplicate (dup)
 duplicate last element
 ```
@@ -150,7 +137,7 @@ push a number range onto the stack by specifying the range start, end, and step 
 ### store and retrieve
  Values can be stored using generic variables that are not associated with either built-in commands or user-defined functions using the `store` command as shown below.
 ```
-1 2 3 saved_here store 4 5 6 cls saved_here
+1 2 3 remember_me store 4 5 6 cls remember_me
   3
 ```
 

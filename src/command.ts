@@ -49,6 +49,13 @@ const getNumber2 = (stck: Stack): [Stack, number, number] => {
   return [rest, a, b];
 };
 
+const getNumber3 = (stck: Stack): [Stack, number, number, number] => {
+  const [restc, c] = getNumber(stck);
+  const [restb, b] = getNumber(restc);
+  const [rest, a] = getNumber(restb);
+  return [rest, a, b, c];
+};
+
 export class Command {
   cmds = new Map<string, StackFn>(); // built-in commands
   userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
@@ -56,7 +63,8 @@ export class Command {
   loadingUserDefFunc = false;
 
   // user-defined functions
-  public getUserCmdNames = (): string[] => [...this.userCmds.keys()].filter((x) => x !== "_");
+  public getUserCmdNames = (): string[] =>
+    [...this.userCmds.keys()].filter((x) => x !== "_");
 
   // evaluateOps
   public evaluateOps =
@@ -231,14 +239,36 @@ export class Command {
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
-    this.cmds.set(
-      "dup",
-      (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
-    );
     this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck) as Stack);
     this.cmds.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getNumber(stck);
       return R.dropLast(a)(rest) as Stack;
+    });
+    this.cmds.set(
+      "dup",
+      (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
+    );
+    this.cmds.set("roll", (stck: Stack): Stack => {
+      const a = R.takeLast(1)(stck);
+      const rest = R.dropLast(1)(stck);
+      return [...a, ...rest] as Stck;
+    });
+    this.cmds.set("rolln", (stck: Stack): Stack => {
+      const [rest, n] = getNumber(stck);
+      const top = R.takeLast(n)(rest);
+      const bottom = R.dropLast(n)(rest);
+      return [...top, ...bottom] as Stck;
+    });
+    this.cmds.set("rot", (stck: Stack): Stack => {
+      const a = R.take(1)(stck);
+      const rest = R.drop(1)(stck);
+      return [...rest, ...a] as Stck;
+    });
+    this.cmds.set("rotn", (stck: Stack): Stack => {
+      const [rest, n] = getNumber(stck);
+      const bottom = R.take(n)(rest);
+      const top = R.drop(n)(rest);
+      return [...top, ...bottom] as Stck;
     });
     this.cmds.set("swap", (stck: Stack): Stack => {
       const [a, b] = R.takeLast(2)(stck);
@@ -259,12 +289,25 @@ export class Command {
         stck.reduce((prod, a) => prod * parseFloat(a), 1).toString(),
       ]
     );
+
+    // ???
     this.cmds.set("io", (stck: Stack): Stack => {
       const [rest, a] = getNumber(stck);
       return [
         ...rest,
         ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
       ];
+    });
+    this.cmds.set("to", (stck: Stack): Stack => {
+      const range = (from: number, end: number, step: number): number[] => {
+        return to > from
+          ? R.unfold((n) => (n <= end ? [n, n + Math.abs(step)] : false), from)
+          : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
+      };
+
+      const [rest, from, to, step] = getNumber3(stck);
+
+      return [...rest, ...range(from, to, step).map((a) => a.toString())];
     });
 
     // user storage ------------------------------------------------------------

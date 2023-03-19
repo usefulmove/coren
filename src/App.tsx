@@ -37,12 +37,15 @@ function App() {
         <Typography variant="h4" className="title" color="secondary">
           Coren
         </Typography>
-        <Typography variant="body2" color="#000000">
-          ( ver. 0.0.3 )
+        <Typography
+          variant="body2"
+          sx={{ color: (theme) => theme.palette.info.main }}
+        >
+          ( ver. 0.0.4 )
         </Typography>
       </Grid>
-      <Grid item xs={1}></Grid>
-      <Grid item xs={10}>
+      <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
+      <Grid item xs={12} sm={10}>
         <TextField
           id="expression"
           label="expression"
@@ -50,7 +53,10 @@ function App() {
           color="primary"
           placeholder="Enter an expression"
           sx={{
-            input: { color: "#fffdd0", fontFamily: "Monospace" },
+            input: {
+              color: (theme) => theme.palette.secondary.main,
+              fontFamily: "Monospace",
+            },
             width: "100%",
           }}
           focused
@@ -58,17 +64,19 @@ function App() {
           value={inputFieldValue}
           onChange={(e) => setInputFieldValue(e.target.value)}
           onKeyDown={(e) => {
-            e.key == "Enter" ? onEnter((e.target as HTMLInputElement).value) : {};
+            e.key == "Enter"
+              ? onEnter((e.target as HTMLInputElement).value)
+              : {};
           }}
         />
       </Grid>
-      <Grid item xs={1}></Grid>
-      <Grid item xs={1}></Grid>
-      <Grid item xs={10}>
+      <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
+      <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
+      <Grid item xs={12} sm={10}>
         <>
           <Typography
             variant="subtitle1"
-            color="#cccaa6"
+            color="secondary"
             sx={{ fontFamily: "Monospace" }}
           >
             {outputStack.length === 0 ? "( stack empty )" : ""}
@@ -77,9 +85,12 @@ function App() {
             <div key={i}>
               <Typography
                 component="span"
-                color={"#444444"}
                 align="left"
-                sx={{ fontSize: 14, fontFamily: "Monospace" }}
+                sx={{
+                  fontSize: 14,
+                  fontFamily: "Monospace",
+                  color: (theme) => theme.palette.info.main,
+                }}
               >
                 {i + 1}.{" "}
               </Typography>
@@ -96,23 +107,37 @@ function App() {
           ))}
         </>
       </Grid>
-      <Grid item xs={1}>
-        {userCmdList.map((cmd) => {
-          return (
-            <Typography key={cmd} color="secondary" sx={{ fontSize: 16 }}>
-              {cmd}
+      <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }}>
+        {userCmdList.length > 0 ? (
+          <>
+            <Typography
+              sx={{ fontSize: 16, color: (theme) => theme.palette.info.main }}
+            >
+              custom:
             </Typography>
-          );
-        })}
+            {userCmdList.map((cmd) => {
+              return (
+                <Typography key={cmd} color="secondary" sx={{ fontSize: 16 }}>
+                  {cmd}
+                </Typography>
+              );
+            })}
+          </>
+        ) : null}
       </Grid>
       <Grid item xs={12}>
-        <Typography color="#000000" sx={{ fontSize: 20 }}>
+        <Typography
+          sx={{ fontSize: 20, color: (theme) => theme.palette.info.main }}
+        >
           ( Refresh page to clear all. Enter `cls` to clear stack. )
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <IconButton>
-          <HelpOutline color="secondary" />
+        <IconButton
+          target="_blank"
+          href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
+        >
+          <HelpOutline color="secondary" fontSize="small" />
         </IconButton>
       </Grid>
     </Grid>
