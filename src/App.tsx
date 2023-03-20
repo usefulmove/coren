@@ -4,7 +4,7 @@ import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { Command } from "./command";
 import { HelpOutline } from "@mui/icons-material";
 
-type Ops = string[]; // array of operations
+type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-exression
 const C = new Command();

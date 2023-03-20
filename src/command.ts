@@ -1,3 +1,4 @@
+import { stackClasses } from "@mui/system";
 import * as R from "ramda";
 
 /*
@@ -26,10 +27,10 @@ import * as R from "ramda";
 
 */
 
-type Stack = string[];
-type Op = string;
-type Ops = string[];
-type StackFn = (input: Stack) => Stack;
+type Stack = string[]; // stack
+type Op = string; // operation
+type Ops = string[]; // operations list
+type StackTransFn = (input: Stack) => Stack; // stack transformation function
 
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.takeLast(1)(stck)[0];
@@ -70,7 +71,7 @@ const getNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
 };
 
 export class Command {
-  cmds = new Map<string, StackFn>(); // built-in commands
+  cmds = new Map<string, StackTransFn>(); // built-in commands
   userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
@@ -167,13 +168,6 @@ export class Command {
       };
     };
 
-    const executeUnaryOpHex = (op: UnaryOperator): ((stck: Stack) => Stack) => {
-      return (stck: Stack): Stack => {
-        const [rest, a] = getNumberHex(stck);
-        return [...rest, op(a).toString()];
-      };
-    };
-
     this.cmds.set("abs", executeUnaryOp(Math.abs));
     this.cmds.set(
       "chs",
@@ -233,30 +227,6 @@ export class Command {
       "ft_m",
       executeUnaryOp((a) => a / 3.28084)
     );
-    //this.cmds.set(
-    //  "dec_hex",
-    //  executeUnaryOp((a) => parseInt(a.toString(16)))
-    //);
-    //this.cmds.set(
-    //  "hex_dec",
-    //  executeUnaryOpHex((a) => parseInt(a.toString()))
-    //);
-    //this.cmds.set(
-    //  "dec_bin",
-    //  executeUnaryOp((a) => parseInt(a.toString(2)))
-    //);
-    //this.cmds.set(
-    //  "bin_dec",
-    //  executeUnaryOp((a) => parseInt(a.toString(), 2))
-    //);
-    //this.cmds.set(
-    //  "dec_oct",
-    //  executeUnaryOp((a) => parseInt(a.toString(8)))
-    //);
-    //this.cmds.set(
-    //  "oct_dec",
-    //  executeUnaryOp((a) => parseInt(a.toString(), 8))
-    //);
 
     // simple binary operations ------------------------------------------------
     // take two numbers from the stack and apply a binary operation and return
@@ -360,6 +330,35 @@ export class Command {
       const [rest, from, to, step] = getNumber3(stck);
 
       return [...rest, ...range(from, to, step).map((a) => a.toString())];
+    });
+
+    // numeric representation conversions --------------------------------------
+    this.cmds.set("dec_hex", (stck: Stack): Stack => {
+      const [rest, a] = getNumber(stck);
+      return [...rest, a.toString(16)];
+    });
+    this.cmds.set("hex_dec", (stck: Stack): Stack => {
+      const a: number = parseInt(R.takeLast(1)(stck)[0], 16);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString()];
+    });
+    this.cmds.set("dec_bin", (stck: Stack): Stack => {
+      const [rest, a] = getNumber(stck);
+      return [...rest, a.toString(2)];
+    });
+    this.cmds.set("bin_dec", (stck: Stack): Stack => {
+      const a: number = parseInt(R.takeLast(1)(stck)[0], 2);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString()];
+    });
+    this.cmds.set("dec_oct", (stck: Stack): Stack => {
+      const [rest, a] = getNumber(stck);
+      return [...rest, a.toString(8)];
+    });
+    this.cmds.set("oct_dec", (stck: Stack): Stack => {
+      const a: number = parseInt(R.takeLast(1)(stck)[0], 8);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString()];
     });
 
     // user storage ------------------------------------------------------------
