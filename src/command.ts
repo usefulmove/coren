@@ -183,6 +183,10 @@ export class Command {
     this.cmds.set("log", executeUnaryOp(Math.log10));
     this.cmds.set("log2", executeUnaryOp(Math.log2));
     this.cmds.set("log10", executeUnaryOp(Math.log10));
+    this.cmds.set(
+      "rand",
+      executeUnaryOp((a) => Math.floor(a * Math.random()))
+    );
     this.cmds.set("round", executeUnaryOp(Math.round));
     this.cmds.set("sgn", executeUnaryOp(Math.sign));
     this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
@@ -270,6 +274,7 @@ export class Command {
       "dup",
       (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
     );
+    this.cmds.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
     this.cmds.set("roll", (stck: Stack): Stack => {
       const a = R.takeLast(1)(stck);
       const rest = R.dropLast(1)(stck);
@@ -357,6 +362,25 @@ export class Command {
     });
     this.cmds.set("oct_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.takeLast(1)(stck)[0], 8);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString()];
+    });
+    this.cmds.set("hex_bin", (stck: Stack): Stack => {
+      const a: number = parseInt(R.takeLast(1)(stck)[0], 16);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString(2)];
+    });
+    this.cmds.set("bin_hex", (stck: Stack): Stack => {
+      const a: number = parseInt(R.takeLast(1)(stck)[0], 2);
+      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      return [...rest, a.toString(16)];
+    });
+    this.cmds.set("dec_asc", (stck: Stack): Stack => {
+      const [rest, a] = getNumber(stck);
+      return [...rest, String.fromCharCode(a)];
+    });
+    this.cmds.set("asc_dec", (stck: Stack): Stack => {
+      const a: number = R.takeLast(1)(stck)[0].charCodeAt(0);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
