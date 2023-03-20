@@ -474,34 +474,6 @@ use an anonymous function to collapse the values on the stack into a single valu
 { Compute the sum of the squares of the numbers from 1 to 5. (The 0 passed
   into the fold command is the initial value of the accumulator.) }
 
-10 11 12 13 14 15 ( _ + ) 0 fold
+10 11 12 13 14 15 ( _ + ) fold
   75
-```
-```
-{ Compute the product of the squares of the values from 1 to 5. }
-
-1 2 3 4 5 ( _ dup x x ) 1 fold
-  14400
-```
-
-As another example, `fold` be used with the `to range operator to calculate the sum of the reciprocals of powers of 2 as shown below.
-<img src="https://raw.githubusercontent.com/usefulmove/comp/main/assets/series-of-reciprocals-of-powers-of-2.jpg" align="center"/>
-<br>
-```
-0 100 1 to ( _ 2 swap ^ inv + ) 0 fold
-  2
-```
-
-### scan
-use an anonymous function and the state of the previous item on the stack to update each stack item
-```
-8 io ( _ + ) scan
-  1
-  3
-  6
-  10
-  15
-  21
-  28
-  36
 ```

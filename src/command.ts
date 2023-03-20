@@ -43,6 +43,12 @@ const getNumber = (stck: Stack): [Stack, number] => {
   return [rest, n];
 };
 
+const getNumberHex = (stck: Stack): [Stack, number] => {
+  const n: number = parseInt(R.takeLast(1)(stck)[0], 16);
+  const rest: Stack = R.dropLast(1)(stck) as Stack;
+  return [rest, n];
+};
+
 const getNumber2 = (stck: Stack): [Stack, number, number] => {
   const [restb, b] = getNumber(stck);
   const [rest, a] = getNumber(restb);
@@ -53,6 +59,13 @@ const getNumber3 = (stck: Stack): [Stack, number, number, number] => {
   const [restc, c] = getNumber(stck);
   const [restb, b] = getNumber(restc);
   const [rest, a] = getNumber(restb);
+  return [rest, a, b, c];
+};
+
+const getNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
+  const [restc, c] = getNumberHex(stck);
+  const [restb, b] = getNumberHex(restc);
+  const [rest, a] = getNumberHex(restb);
   return [rest, a, b, c];
 };
 
@@ -154,6 +167,13 @@ export class Command {
       };
     };
 
+    const executeUnaryOpHex = (op: UnaryOperator): ((stck: Stack) => Stack) => {
+      return (stck: Stack): Stack => {
+        const [rest, a] = getNumberHex(stck);
+        return [...rest, op(a).toString()];
+      };
+    };
+
     this.cmds.set("abs", executeUnaryOp(Math.abs));
     this.cmds.set(
       "chs",
@@ -213,26 +233,26 @@ export class Command {
       "ft_m",
       executeUnaryOp((a) => a / 3.28084)
     );
-    this.cmds.set(
-      "dec_hex",
-      executeUnaryOp((a) => parseInt(a.toString(16)))
-    );
+    //this.cmds.set(
+    //  "dec_hex",
+    //  executeUnaryOp((a) => parseInt(a.toString(16)))
+    //);
     //this.cmds.set(
     //  "hex_dec",
-    //  executeUnaryOp((a) => parseInt(a.toString(), 16))
+    //  executeUnaryOpHex((a) => parseInt(a.toString()))
     //);
-    this.cmds.set(
-      "dec_bin",
-      executeUnaryOp((a) => parseInt(a.toString(2)))
-    );
+    //this.cmds.set(
+    //  "dec_bin",
+    //  executeUnaryOp((a) => parseInt(a.toString(2)))
+    //);
     //this.cmds.set(
     //  "bin_dec",
     //  executeUnaryOp((a) => parseInt(a.toString(), 2))
     //);
-    this.cmds.set(
-      "dec_oct",
-      executeUnaryOp((a) => parseInt(a.toString(8)))
-    );
+    //this.cmds.set(
+    //  "dec_oct",
+    //  executeUnaryOp((a) => parseInt(a.toString(8)))
+    //);
     //this.cmds.set(
     //  "oct_dec",
     //  executeUnaryOp((a) => parseInt(a.toString(), 8))
@@ -357,12 +377,18 @@ export class Command {
       this.loadingUserDefFunc = true;
       return [...stck];
     });
-
     this.cmds.set("map", (stck: Stack): Stack => {
       const outStck: Stack = stck
         .map((a) => this.evaluateOps(this.userCmds.get("_")!)([a]))
         .flat();
       return outStck;
+    });
+    this.cmds.set("fold", (stck: Stack): Stack => {
+      let interimStack: Stack = stck;
+      while (interimStack.length > 1) {
+        interimStack = this.evaluateOps(this.userCmds.get("_")!)(interimStack);
+      }
+      return interimStack;
     });
   }
 }
