@@ -471,9 +471,8 @@ map an anonymous function to each of the stack elements
 ### fold (reduce)
 use an anonymous function to collapse the values on the stack into a single value
 ```
-{ Compute the sum of the squares of the numbers from 1 to 5. (The 0 passed
-  into the fold command is the initial value of the accumulator.) }
+{ Compute the sum of the squares of the numbers from 1 to 5. }
 
-10 11 12 13 14 15 ( _ + ) fold
-  75
+1 2 3 4 5 ( _ 2 ^ ) map ( _ + ) fold
+  55
 ```
