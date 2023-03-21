@@ -190,6 +190,7 @@ export class Command {
     this.cmds.set("round", executeUnaryOp(Math.round));
     this.cmds.set("sgn", executeUnaryOp(Math.sign));
     this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
+    this.cmds.set("tng", executeUnaryOp((a) => a * (a + 1) / 2));
     this.cmds.set(
       "!",
       executeUnaryOp((a: number) => R.product(R.range(1)(a)))
