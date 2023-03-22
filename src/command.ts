@@ -30,7 +30,7 @@ import * as R from "ramda";
 type Stack = string[]; // stack
 type Op = string; // operation
 type Ops = string[]; // operations list
-type StackTransFn = (input: Stack) => Stack; // stack transformation function
+type StackFn = (input: Stack) => Stack; // stack transformation function
 
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.takeLast(1)(stck)[0];
@@ -38,40 +38,40 @@ const getOp = (stck: Stack): [Op, Stack] => {
   return [op, rest];
 };
 
-const getNumber = (stck: Stack): [Stack, number] => {
+const getStackNumber = (stck: Stack): [Stack, number] => {
   const n: number = parseFloat(R.takeLast(1)(stck)[0]);
   const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [rest, n];
 };
 
-const getNumberHex = (stck: Stack): [Stack, number] => {
+const getStackNumberHex = (stck: Stack): [Stack, number] => {
   const n: number = parseInt(R.takeLast(1)(stck)[0], 16);
   const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [rest, n];
 };
 
-const getNumber2 = (stck: Stack): [Stack, number, number] => {
-  const [restb, b] = getNumber(stck);
-  const [rest, a] = getNumber(restb);
+const getStackNumber2 = (stck: Stack): [Stack, number, number] => {
+  const [restb, b] = getStackNumber(stck);
+  const [rest, a] = getStackNumber(restb);
   return [rest, a, b];
 };
 
-const getNumber3 = (stck: Stack): [Stack, number, number, number] => {
-  const [restc, c] = getNumber(stck);
-  const [restb, b] = getNumber(restc);
-  const [rest, a] = getNumber(restb);
+const getStackNumber3 = (stck: Stack): [Stack, number, number, number] => {
+  const [restc, c] = getStackNumber(stck);
+  const [restb, b] = getStackNumber(restc);
+  const [rest, a] = getStackNumber(restb);
   return [rest, a, b, c];
 };
 
-const getNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
-  const [restc, c] = getNumberHex(stck);
-  const [restb, b] = getNumberHex(restc);
-  const [rest, a] = getNumberHex(restb);
+const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
+  const [restc, c] = getStackNumberHex(stck);
+  const [restb, b] = getStackNumberHex(restc);
+  const [rest, a] = getStackNumberHex(restb);
   return [rest, a, b, c];
 };
 
 export class Command {
-  cmds = new Map<string, StackTransFn>(); // built-in commands
+  cmds = new Map<string, StackFn>(); // built-in commands
   userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
@@ -163,7 +163,7 @@ export class Command {
 
     const executeUnaryOp = (op: UnaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
-        const [rest, a] = getNumber(stck);
+        const [rest, a] = getStackNumber(stck);
         return [...rest, op(a).toString()];
       };
     };
@@ -196,6 +196,7 @@ export class Command {
       executeUnaryOp((a: number) => R.product(R.range(1)(a)))
     );
 
+    // trigonometric functions
     const radToDeg = (a: number): number => (a * 180) / Math.PI;
     const degToRad = (a: number): number => (a * Math.PI) / 180;
     this.cmds.set("deg_rad", executeUnaryOp(degToRad));
@@ -207,7 +208,7 @@ export class Command {
     this.cmds.set("acos", executeUnaryOp(Math.acos));
     this.cmds.set("atan", executeUnaryOp(Math.atan));
 
-    // conversions
+    // conversion functions
     this.cmds.set(
       "c_f",
       executeUnaryOp((a) => (a * 9) / 5 + 32)
@@ -216,21 +217,23 @@ export class Command {
       "f_c",
       executeUnaryOp((a) => ((a - 32) * 5) / 9)
     );
+    const KILOMETERS_PER_MILE = 1.60934;
     this.cmds.set(
       "mi_km",
-      executeUnaryOp((a) => a * 1.60934)
+      executeUnaryOp((a) => a * KILOMETERS_PER_MILE)
     );
     this.cmds.set(
       "km_mi",
-      executeUnaryOp((a) => a / 1.60934)
+      executeUnaryOp((a) => a / KILOMETERS_PER_MILE)
     );
+    const FEET_PER_METER = 3.28084;
     this.cmds.set(
       "m_ft",
-      executeUnaryOp((a) => a * 3.28084)
+      executeUnaryOp((a) => a * FEET_PER_METER)
     );
     this.cmds.set(
       "ft_m",
-      executeUnaryOp((a) => a / 3.28084)
+      executeUnaryOp((a) => a / FEET_PER_METER)
     );
 
     // simple binary operations ------------------------------------------------
@@ -240,7 +243,7 @@ export class Command {
 
     const executeBinaryOp = (op: BinaryOperator): ((stck: Stack) => Stack) => {
       return (stck: Stack): Stack => {
-        const [rest, a, b] = getNumber2(stck);
+        const [rest, a, b] = getStackNumber2(stck);
         return [...rest, op(a, b).toString()];
       };
     };
@@ -264,11 +267,26 @@ export class Command {
       executeBinaryOp((a, b) => Math.log(a) / Math.log(b))
     );
 
+    // bitwise binary functions
+    this.cmds.set("and", executeBinaryOp((a, b) => a & b));
+    this.cmds.set("not", executeUnaryOp((a) => ~a));
+    const countOnes = (a: number): number => {
+      let count = 0;
+      while (a) {
+        count += a & 1;
+        a >>= 1;
+      }
+      return count;
+    };
+    this.cmds.set("ones", executeUnaryOp(countOnes));
+    this.cmds.set("or", executeBinaryOp((a, b) => a | b));
+    this.cmds.set("xor", executeBinaryOp((a, b) => a ^ b));
+
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
     this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck) as Stack);
     this.cmds.set("dropn", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return R.dropLast(a)(rest) as Stack;
     });
     this.cmds.set(
@@ -282,7 +300,7 @@ export class Command {
       return [...a, ...rest] as Stack;
     });
     this.cmds.set("rolln", (stck: Stack): Stack => {
-      const [rest, n] = getNumber(stck);
+      const [rest, n] = getStackNumber(stck);
       const top = R.takeLast(n)(rest);
       const bottom = R.dropLast(n)(rest);
       return [...top, ...bottom] as Stack;
@@ -293,7 +311,7 @@ export class Command {
       return [...rest, ...a] as Stack;
     });
     this.cmds.set("rotn", (stck: Stack): Stack => {
-      const [rest, n] = getNumber(stck);
+      const [rest, n] = getStackNumber(stck);
       const bottom = R.take(n)(rest);
       const top = R.drop(n)(rest);
       return [...top, ...bottom] as Stack;
@@ -320,7 +338,7 @@ export class Command {
 
     // ???
     this.cmds.set("io", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return [
         ...rest,
         ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
@@ -333,14 +351,14 @@ export class Command {
           : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
       };
 
-      const [rest, from, to, step] = getNumber3(stck);
+      const [rest, from, to, step] = getStackNumber3(stck);
 
       return [...rest, ...range(from, to, step).map((a) => a.toString())];
     });
 
     // numeric representation conversions --------------------------------------
     this.cmds.set("dec_hex", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(16)];
     });
     this.cmds.set("hex_dec", (stck: Stack): Stack => {
@@ -349,7 +367,7 @@ export class Command {
       return [...rest, a.toString()];
     });
     this.cmds.set("dec_bin", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(2)];
     });
     this.cmds.set("bin_dec", (stck: Stack): Stack => {
@@ -358,7 +376,7 @@ export class Command {
       return [...rest, a.toString()];
     });
     this.cmds.set("dec_oct", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(8)];
     });
     this.cmds.set("oct_dec", (stck: Stack): Stack => {
@@ -377,7 +395,7 @@ export class Command {
       return [...rest, a.toString(16)];
     });
     this.cmds.set("dec_asc", (stck: Stack): Stack => {
-      const [rest, a] = getNumber(stck);
+      const [rest, a] = getStackNumber(stck);
       return [...rest, String.fromCharCode(a)];
     });
     this.cmds.set("asc_dec", (stck: Stack): Stack => {
