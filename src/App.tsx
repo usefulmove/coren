@@ -41,7 +41,7 @@ function App() {
           variant="body2"
           sx={{ color: (theme) => theme.palette.info.main }}
         >
-          ( ver. 0.0.5 )
+          ( ver. 0.0.6 )
         </Typography>
       </Grid>
       <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />

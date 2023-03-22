@@ -78,7 +78,7 @@ export class Command {
 
   // user-defined functions
   public getUserCmdNames = (): string[] =>
-    [...this.userCmds.keys()].filter((x) => x !== "_");
+    [...this.userCmds.keys()].filter((x) => x !== this.lambda);
 
   // evaluateOps
   public evaluateOps =
@@ -119,7 +119,7 @@ export class Command {
     };
 
   // user-defined functions
-  lambdaChar: string = "_";
+  lambda: string = "_";
   udfStartChar: string = "(";
   udfEndChar: string = ")";
 
@@ -421,14 +421,14 @@ export class Command {
     });
     this.cmds.set("map", (stck: Stack): Stack => {
       const outStck: Stack = stck
-        .map((a) => this.evaluateOps(this.userCmds.get("_")!)([a]))
+        .map((a) => this.evaluateOps(this.userCmds.get(this.lambda)!)([a]))
         .flat();
       return outStck;
     });
     this.cmds.set("fold", (stck: Stack): Stack => {
       let interimStack: Stack = stck;
       while (interimStack.length > 1) {
-        interimStack = this.evaluateOps(this.userCmds.get("_")!)(interimStack);
+        interimStack = this.evaluateOps(this.userCmds.get(this.lambda)!)(interimStack);
       }
       return interimStack;
     });
