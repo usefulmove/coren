@@ -126,6 +126,7 @@ export class Command {
   loadUserDefFunc = (() => {
     let instantiated = false;
     let name: string = "";
+    let depth: number = 0;
 
     return (op: Op): boolean => {
       console.log(
@@ -140,9 +141,17 @@ export class Command {
           return true; // continue loading
         case true:
           if (op === this.udfEndChar) {
-            // stop loading (recording) user function
-            instantiated = false; // reset
-            return false;
+            switch (depth) {
+              case 0:
+                // stop loading (recording) user function
+                instantiated = false; // reset
+                return false;
+              default:
+                depth -= 1; // continue loading
+            }
+          }
+          if (op === this.udfStartChar) {
+            depth += 1;
           }
           this.userCmds.get(name)!.push(op);
           return true; // continue loading
