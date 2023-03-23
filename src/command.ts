@@ -293,6 +293,8 @@ export class Command {
     this.cmds.set("or", executeBinaryOp((a, b) => a | b));
     this.cmds.set("xor", executeBinaryOp((a, b) => a ^ b));
     this.cmds.set("xnor", executeBinaryOp((a, b) => ~(a ^ b)));
+    this.cmds.set(">>", executeBinaryOp((a, b) => a >> b));
+    this.cmds.set("<<", executeBinaryOp((a, b) => a << b));
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
