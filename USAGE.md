@@ -338,7 +338,7 @@ e ln
   1
 ```
 
-### max, max_all
+### max
 return the maximum of the last two elements on the stack
 ```
 1 2 3 4 max
@@ -346,13 +346,8 @@ return the maximum of the last two elements on the stack
   2
   4
 ```
-return the maximum of all elements on the stack
-```
-1 2 3 4 max_all
-  4
-```
 
-### min, min_all
+### min
 return the minimum of the last two elements on the stack
 ```
 1 2 3 4 min
@@ -360,23 +355,11 @@ return the minimum of the last two elements on the stack
   2
   3
 ```
-return the minimum of all elements on the stack
-```
-1 2 3 4 min_all
-  1
-```
 
-### avg, avg_all
-return the average of the last two elements on the stack
-```
-1 2 3 4 avg
-  1
-  2
-  3.5
-```
+### avg
 return the average of all elements on the stack
 ```
-1 2 3 4 avg_all
+1 2 3 4 avg
   2.5
 ```
 
