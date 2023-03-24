@@ -349,6 +349,10 @@ export class Command {
         stck.reduce((prod, a) => prod * parseFloat(a), 1).toString(),
       ]
     );
+    this.cmds.set("avg", (stck: Stack): Stack => {
+      const sum = stck.reduce((sum, a) => sum + parseFloat(a), 0);
+      return [(sum / stck.length).toString()];
+    });
 
     // simple 3-ary operations ------------------------------------------------
     // take three numbers from the stack and apply a binary operation and return
