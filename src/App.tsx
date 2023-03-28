@@ -2,7 +2,7 @@ import "./App.css";
 import { useState } from "react";
 import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { Command } from "./command";
-import { HelpOutline } from "@mui/icons-material";
+import { GitHub, HelpOutline } from "@mui/icons-material";
 
 const NAME = "Coren";
 const VERSION = "ver. 0.0.8";
@@ -168,6 +168,12 @@ function App() {
           href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
         >
           <HelpOutline color="secondary" fontSize="small" />
+        </IconButton>
+        <IconButton
+          target="_blank"
+          href="https://github.com/usefulmove/coren/"
+        >
+          <GitHub color="secondary" fontSize="small" />
         </IconButton>
       </Grid>
     </Grid>
