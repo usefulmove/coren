@@ -53,13 +53,14 @@ function App() {
 
   const onEnter = (expr: Sexpr) => {
     console.log("evaluating expression = ", expr);
-    const ops = exprToOps(expr);
 
     // evaluate expression and set output stack to result
+    const ops = exprToOps(expr);
     setOutputStack(C.evaluateOps(ops)(outputStack));
 
     clearInput(); // clear input field
 
+    // update user command names to see if new command has been added
     setUserCmdList(C.getUserCmdNames());
   };
 
@@ -169,10 +170,7 @@ function App() {
         >
           <HelpOutline color="secondary" fontSize="small" />
         </IconButton>
-        <IconButton
-          target="_blank"
-          href="https://github.com/usefulmove/coren/"
-        >
+        <IconButton target="_blank" href="https://github.com/usefulmove/coren/">
           <GitHub color="secondary" fontSize="small" />
         </IconButton>
       </Grid>

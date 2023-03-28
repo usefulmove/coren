@@ -159,11 +159,38 @@ export class Command {
     };
   })();
 
+  magic8 = new Map<number, string>([
+    [0, "it is certain"],
+    [1, "it is decidedly so"],
+    [2, "without a doubt"],
+    [3, "yes definitely"],
+    [4, "you may rely on it"],
+    [5, "as I see it, yes"],
+    [6, "most likely"],
+    [7, "outlook good"],
+    [8, "yes"],
+    [9, "signs point to yes"],
+    [10, "reply hazy try again"],
+    [11, "ask again later"],
+    [12, "better not tell you now"],
+    [13, "cannot predict now"],
+    [14, "concentrate and ask again"],
+    [15, "don't count on it"],
+    [16, "my reply is no"],
+    [17, "my sources say no"],
+    [18, "outlook not so good"],
+    [19, "very doubtful"],
+  ]);
+
   // constructor - create built-in commands
   constructor() {
     // simple nullary operations -----------------------------------------------
     this.cmds.set("pi", (stck: Stack): Stack => [...stck, Math.PI.toString()]);
     this.cmds.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
+    this.cmds.set("magic8", (stck: Stack): Stack => {
+      const ind = Math.floor(Math.random() * this.magic8.size);
+      return [...stck, this.magic8.get(ind) ?? "error"];
+    });
 
     // simple unary operations -------------------------------------------------
     // take a single number from the stack and apply a unary operation and
@@ -199,7 +226,10 @@ export class Command {
     this.cmds.set("round", executeUnaryOp(Math.round));
     this.cmds.set("sgn", executeUnaryOp(Math.sign));
     this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
-    this.cmds.set("tng", executeUnaryOp((a) => a * (a + 1) / 2));
+    this.cmds.set(
+      "tng",
+      executeUnaryOp((a) => (a * (a + 1)) / 2)
+    );
     this.cmds.set(
       "!",
       executeUnaryOp((a: number) => R.product(R.range(1)(a)))
@@ -277,10 +307,22 @@ export class Command {
     );
 
     // bitwise binary functions
-    this.cmds.set("and", executeBinaryOp((a, b) => a & b));
-    this.cmds.set("nand", executeBinaryOp((a, b) => ~(a & b)));
-    this.cmds.set("nor", executeBinaryOp((a, b) => ~(a | b)));
-    this.cmds.set("not", executeUnaryOp((a) => ~a));
+    this.cmds.set(
+      "and",
+      executeBinaryOp((a, b) => a & b)
+    );
+    this.cmds.set(
+      "nand",
+      executeBinaryOp((a, b) => ~(a & b))
+    );
+    this.cmds.set(
+      "nor",
+      executeBinaryOp((a, b) => ~(a | b))
+    );
+    this.cmds.set(
+      "not",
+      executeUnaryOp((a) => ~a)
+    );
     const countOnes = (a: number): number => {
       let count = 0;
       while (a) {
@@ -290,11 +332,26 @@ export class Command {
       return count;
     };
     this.cmds.set("ones", executeUnaryOp(countOnes));
-    this.cmds.set("or", executeBinaryOp((a, b) => a | b));
-    this.cmds.set("xor", executeBinaryOp((a, b) => a ^ b));
-    this.cmds.set("xnor", executeBinaryOp((a, b) => ~(a ^ b)));
-    this.cmds.set(">>", executeBinaryOp((a, b) => a >> b));
-    this.cmds.set("<<", executeBinaryOp((a, b) => a << b));
+    this.cmds.set(
+      "or",
+      executeBinaryOp((a, b) => a | b)
+    );
+    this.cmds.set(
+      "xor",
+      executeBinaryOp((a, b) => a ^ b)
+    );
+    this.cmds.set(
+      "xnor",
+      executeBinaryOp((a, b) => ~(a ^ b))
+    );
+    this.cmds.set(
+      ">>",
+      executeBinaryOp((a, b) => a >> b)
+    );
+    this.cmds.set(
+      "<<",
+      executeBinaryOp((a, b) => a << b)
+    );
 
     // stack operations
     this.cmds.set("cls", (stck: Stack): Stack => []);
@@ -303,10 +360,7 @@ export class Command {
       const [rest, a] = getStackNumber(stck);
       return R.dropLast(a)(rest) as Stack;
     });
-    this.cmds.set(
-      "dup",
-      (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
-    );
+    this.cmds.set("dup", (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]);
     this.cmds.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
     this.cmds.set("roll", (stck: Stack): Stack => {
       const a = R.last(stck);
@@ -362,26 +416,32 @@ export class Command {
     this.cmds.set("proot", (stck: Stack): Stack => {
       const [rest, a, b, c] = getStackNumber3(stck);
       const disc = b * b - 4 * a * c; // discriminant
-        
+
       let real1, imag1, real2, imag2;
       switch (disc < 0) {
         case true: {
-          real1 = (-b / (2 * a)); // r_1 real
-          imag1 = (Math.sqrt(-disc) / (2 * a)); // r_1 imag
+          real1 = -b / (2 * a); // r_1 real
+          imag1 = Math.sqrt(-disc) / (2 * a); // r_1 imag
           real2 = (-b / (2 * a)).toString(); // r_2 real
-          imag2 = (-1. * Math.sqrt(-disc) / (2 * a)); // r_2 imag
+          imag2 = (-1 * Math.sqrt(-disc)) / (2 * a); // r_2 imag
           break;
         }
         case false: {
-          real1 = ((-b + Math.sqrt(disc)) / (2 * a)); // r_1 real
+          real1 = (-b + Math.sqrt(disc)) / (2 * a); // r_1 real
           imag1 = 0; // r_1 imag
-          real2 = ((-b - Math.sqrt(disc)) / (2 * a)); // r_2 real
+          real2 = (-b - Math.sqrt(disc)) / (2 * a); // r_2 real
           imag2 = 0; // r_2 imag
           break;
         }
       }
 
-      return [...rest, real1.toString(), imag1.toString(), real2.toString(), imag2.toString()];
+      return [
+        ...rest,
+        real1.toString(),
+        imag1.toString(),
+        real2.toString(),
+        imag2.toString(),
+      ];
     });
 
     // ???
