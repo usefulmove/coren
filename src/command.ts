@@ -33,19 +33,19 @@ type Ops = string[]; // operations list
 type StackFn = (input: Stack) => Stack; // stack transformation function
 
 const getOp = (stck: Stack): [Op, Stack] => {
-  const op: Op = R.takeLast(1)(stck)[0];
+  const op: Op = R.last(stck) ?? "";
   const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [op, rest];
 };
 
 const getStackNumber = (stck: Stack): [Stack, number] => {
-  const n: number = parseFloat(R.takeLast(1)(stck)[0]);
+  const n: number = parseFloat(R.last(stck) ?? "0");
   const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [rest, n];
 };
 
 const getStackNumberHex = (stck: Stack): [Stack, number] => {
-  const n: number = parseInt(R.takeLast(1)(stck)[0], 16);
+  const n: number = parseInt(R.last(stck) ?? "0", 16);
   const rest: Stack = R.dropLast(1)(stck) as Stack;
   return [rest, n];
 };
@@ -305,13 +305,13 @@ export class Command {
     });
     this.cmds.set(
       "dup",
-      (stck: Stack): Stack => [...stck, ...R.takeLast(1)(stck)]
+      (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
     );
     this.cmds.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
     this.cmds.set("roll", (stck: Stack): Stack => {
-      const a = R.takeLast(1)(stck);
+      const a = R.last(stck);
       const rest = R.dropLast(1)(stck);
-      return [...a, ...rest] as Stack;
+      return [a, ...rest] as Stack;
     });
     this.cmds.set("rolln", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
@@ -320,9 +320,9 @@ export class Command {
       return [...top, ...bottom] as Stack;
     });
     this.cmds.set("rot", (stck: Stack): Stack => {
-      const a = R.take(1)(stck);
+      const a = R.head(stck);
       const rest = R.drop(1)(stck);
-      return [...rest, ...a] as Stack;
+      return [...rest, a] as Stack;
     });
     this.cmds.set("rotn", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
@@ -410,7 +410,7 @@ export class Command {
       return [...rest, a.toString(16)];
     });
     this.cmds.set("hex_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.takeLast(1)(stck)[0], 16);
+      const a: number = parseInt(R.last(stck) ?? "0", 16);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
@@ -419,7 +419,7 @@ export class Command {
       return [...rest, a.toString(2)];
     });
     this.cmds.set("bin_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.takeLast(1)(stck)[0], 2);
+      const a: number = parseInt(R.last(stck) ?? "0", 2);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
@@ -428,17 +428,17 @@ export class Command {
       return [...rest, a.toString(8)];
     });
     this.cmds.set("oct_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.takeLast(1)(stck)[0], 8);
+      const a: number = parseInt(R.last(stck) ?? "0", 8);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
     this.cmds.set("hex_bin", (stck: Stack): Stack => {
-      const a: number = parseInt(R.takeLast(1)(stck)[0], 16);
+      const a: number = parseInt(R.last(stck) ?? "0", 16);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString(2)];
     });
     this.cmds.set("bin_hex", (stck: Stack): Stack => {
-      const a: number = parseInt(R.takeLast(1)(stck)[0], 2);
+      const a: number = parseInt(R.last(stck) ?? "0", 2);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString(16)];
     });
@@ -447,7 +447,7 @@ export class Command {
       return [...rest, String.fromCharCode(a)];
     });
     this.cmds.set("asc_dec", (stck: Stack): Stack => {
-      const a: number = R.takeLast(1)(stck)[0].charCodeAt(0);
+      const a: number = (R.last(stck) ?? "").charCodeAt(0);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });

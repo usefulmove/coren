@@ -4,6 +4,8 @@ import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { Command } from "./command";
 import { HelpOutline } from "@mui/icons-material";
 
+const VERSION = "ver. 0.0.8";
+
 type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-expression
@@ -72,7 +74,7 @@ function App() {
           variant="body2"
           sx={{ color: (theme) => theme.palette.info.main }}
         >
-          ( ver. 0.0.8 )
+          ( {VERSION} )
         </Typography>
       </Grid>
       <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
