@@ -4,6 +4,7 @@ import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { Command } from "./command";
 import { HelpOutline } from "@mui/icons-material";
 
+const NAME = "Coren";
 const VERSION = "ver. 0.0.8";
 
 type Ops = string[]; // operations list
@@ -68,7 +69,7 @@ function App() {
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" className="title" color="secondary">
-          Coren
+          {NAME}
         </Typography>
         <Typography
           variant="body2"
