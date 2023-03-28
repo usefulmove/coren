@@ -13,9 +13,40 @@ function App() {
   const [outputStack, setOutputStack] = useState<string[]>([]);
   const [inputFieldValue, setInputFieldValue] = useState("");
   const [userCmdList, setUserCmdList] = useState<string[]>([]);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   const exprToOps = (expr: Sexpr): Ops =>
     expr.split(" ").filter((op: Op) => op.length > 0);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "ArrowUp") {
+      if (currentIndex > 0) {
+        setCurrentIndex((prevIndex) => prevIndex - 1);
+        setInputFieldValue(commandHistory[currentIndex - 1]);
+      } else if (currentIndex === 0) {
+        setCurrentIndex(-1);
+        setInputFieldValue("");
+      } else if (currentIndex === -1) {
+        setInputFieldValue(commandHistory[commandHistory.length - 1]);
+        setCurrentIndex(commandHistory.length - 1);
+      }
+    } else if (e.key === "ArrowDown") {
+      if (currentIndex < commandHistory.length - 1) {
+        setCurrentIndex((prevIndex) => prevIndex + 1);
+        setInputFieldValue(commandHistory[currentIndex + 1]);
+      } else {
+        setCurrentIndex(-1);
+        setInputFieldValue("");
+      }
+    } else if (e.key === "Enter") {
+      if (inputFieldValue.trim() !== "") {
+        setCommandHistory((prevHistory) => [...prevHistory, inputFieldValue]);
+        setCurrentIndex(-1);
+      }
+      onEnter((e.target as HTMLInputElement).value);
+    }
+  };
 
   const onEnter = (expr: Sexpr) => {
     console.log("evaluating expression = ", expr);
@@ -41,7 +72,7 @@ function App() {
           variant="body2"
           sx={{ color: (theme) => theme.palette.info.main }}
         >
-          ( ver. 0.0.6 )
+          ( ver. 0.0.8 )
         </Typography>
       </Grid>
       <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
@@ -63,11 +94,7 @@ function App() {
           autoFocus
           value={inputFieldValue}
           onChange={(e) => setInputFieldValue(e.target.value)}
-          onKeyDown={(e) => {
-            e.key == "Enter"
-              ? onEnter((e.target as HTMLInputElement).value)
-              : {};
-          }}
+          onKeyDown={handleKeyDown}
         />
       </Grid>
       <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
