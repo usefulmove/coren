@@ -6,7 +6,7 @@ import { HelpOutline } from "@mui/icons-material";
 
 type Ops = string[]; // operations list
 type Op = string; // operation
-type Sexpr = string; // S-exression
+type Sexpr = string; // S-expression
 const C = new Command();
 
 function App() {
