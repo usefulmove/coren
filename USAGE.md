@@ -454,7 +454,7 @@ map an anonymous function to each of the stack elements
 ### fold (reduce)
 use an anonymous function to collapse the values on the stack into a single value
 ```
-{ Compute the sum of the squares of the numbers from 1 to 5. }
+Compute the sum of the squares of the numbers from 1 to 5.
 
 1 2 3 4 5 ( _ 2 ^ ) map ( _ + ) fold
   55
