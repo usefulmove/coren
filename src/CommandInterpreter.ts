@@ -5,7 +5,7 @@ import * as R from "ramda";
   are either be symbols (commands) or values. Each calculation is a list of
   operations that are processed in order of occurrence. This is an imple-
   mentation of a list processor (LISP) for Reverse Polish Notation (RPN)
-  S-expressions (sexp).
+  S-expressions.
 
     operations list structure
       ( object : command or value )
