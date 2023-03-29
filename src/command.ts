@@ -71,45 +71,39 @@ const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
 };
 
 export class Command {
-  cmds = new Map<string, StackFn>(); // built-in commands
-  userCmds = new Map<string, Ops>(); // user-defined and anonymous functions
+  cmdfns = new Map<string, StackFn>(); // built-in commands
+  userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
 
   loadingUserDefFunc = false;
 
   // user-defined functions
-  public getUserCmdNames = (): string[] =>
-    [...this.userCmds.keys()].filter((x) => x !== this.lambda);
+  public getUserCmdNames = (): string[] => {
+    const names = [...this.userCmdOps.keys()];
+    return names.filter((x) => x !== this.lambda);
+  };
 
   // evaluateOps
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack => {
-      console.log({ ops, stck });
-
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
-        console.log({ interimStack, op });
-
-        console.log(`loading? {${this.loadingUserDefFunc}}`);
-
         switch (this.loadingUserDefFunc) {
           case false: // default (general case) - not loading user function
-            switch (this.cmds.has(op)) {
+            switch (this.cmdfns.has(op)) {
               case true: // command (known)
-                return this.cmds.get(op)!(interimStack)!;
+                // execute command function on interim stack
+                return this.cmdfns.get(op)!(interimStack)!;
               case false:
-                if (this.userCmds.has(op)) {
-                  console.log(`executing user function (name=${op})`);
-                  //console.log(`$expression={this.userCmds.get(op)}`);
-                  const updatedStck = this.evaluateOps(this.userCmds.get(op)!)(
-                    interimStack
-                  ); // recursive call to evaluateOps
+                if (this.userCmdOps.has(op)) {
+                  const updatedStck = this.evaluateOps(
+                    this.userCmdOps.get(op)!
+                  )(interimStack); // recursive call to evaluateOps
                   return updatedStck;
                 } else {
                   return [...interimStack, op]; // value (unknown command)
                 }
             }
           case true:
-            console.log(`loading user function definition (op=${op})`);
             this.loadingUserDefFunc = this.loadUserDefFunc(op);
             return [...interimStack];
         }
@@ -129,14 +123,10 @@ export class Command {
     let depth: number = 0;
 
     return (op: Op): boolean => {
-      console.log(
-        `running loadUserDefFunc (op=${op}) (instantiated=${instantiated})`
-      );
       switch (instantiated) {
         case false:
           name = op;
-          console.log(`adding user function definition (name=${name})`);
-          this.userCmds.set(name, []);
+          this.userCmdOps.set(name, []);
           instantiated = true;
           return true; // continue loading
         case true:
@@ -153,7 +143,7 @@ export class Command {
           if (op === this.udfStartChar) {
             depth += 1;
           }
-          this.userCmds.get(name)!.push(op);
+          this.userCmdOps.get(name)!.push(op);
           return true; // continue loading
       }
     };
@@ -185,9 +175,12 @@ export class Command {
   // constructor - create built-in commands
   constructor() {
     // simple nullary operations -----------------------------------------------
-    this.cmds.set("pi", (stck: Stack): Stack => [...stck, Math.PI.toString()]);
-    this.cmds.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
-    this.cmds.set("magic8", (stck: Stack): Stack => {
+    this.cmdfns.set(
+      "pi",
+      (stck: Stack): Stack => [...stck, Math.PI.toString()]
+    );
+    this.cmdfns.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
+    this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
       return [...stck, this.magic8.get(ind) ?? "error"];
     });
@@ -204,33 +197,33 @@ export class Command {
       };
     };
 
-    this.cmds.set("abs", executeUnaryOp(Math.abs));
-    this.cmds.set(
+    this.cmdfns.set("abs", executeUnaryOp(Math.abs));
+    this.cmdfns.set(
       "chs",
       executeUnaryOp((a: number) => -a)
     );
-    this.cmds.set("floor", executeUnaryOp(Math.floor));
-    this.cmds.set("ceil", executeUnaryOp(Math.ceil));
-    this.cmds.set(
+    this.cmdfns.set("floor", executeUnaryOp(Math.floor));
+    this.cmdfns.set("ceil", executeUnaryOp(Math.ceil));
+    this.cmdfns.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
     );
-    this.cmds.set("ln", executeUnaryOp(Math.log));
-    this.cmds.set("log", executeUnaryOp(Math.log10));
-    this.cmds.set("log2", executeUnaryOp(Math.log2));
-    this.cmds.set("log10", executeUnaryOp(Math.log10));
-    this.cmds.set(
+    this.cmdfns.set("ln", executeUnaryOp(Math.log));
+    this.cmdfns.set("log", executeUnaryOp(Math.log10));
+    this.cmdfns.set("log2", executeUnaryOp(Math.log2));
+    this.cmdfns.set("log10", executeUnaryOp(Math.log10));
+    this.cmdfns.set(
       "rand",
       executeUnaryOp((a) => Math.floor(a * Math.random()))
     );
-    this.cmds.set("round", executeUnaryOp(Math.round));
-    this.cmds.set("sgn", executeUnaryOp(Math.sign));
-    this.cmds.set("sqrt", executeUnaryOp(Math.sqrt));
-    this.cmds.set(
+    this.cmdfns.set("round", executeUnaryOp(Math.round));
+    this.cmdfns.set("sgn", executeUnaryOp(Math.sign));
+    this.cmdfns.set("sqrt", executeUnaryOp(Math.sqrt));
+    this.cmdfns.set(
       "tng",
       executeUnaryOp((a) => (a * (a + 1)) / 2)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "!",
       executeUnaryOp((a: number) => R.product(R.range(1)(a)))
     );
@@ -238,39 +231,39 @@ export class Command {
     // trigonometric functions
     const radToDeg = (a: number): number => (a * 180) / Math.PI;
     const degToRad = (a: number): number => (a * Math.PI) / 180;
-    this.cmds.set("deg_rad", executeUnaryOp(degToRad));
-    this.cmds.set("rad_deg", executeUnaryOp(radToDeg));
-    this.cmds.set("sin", executeUnaryOp(Math.sin));
-    this.cmds.set("cos", executeUnaryOp(Math.cos));
-    this.cmds.set("tan", executeUnaryOp(Math.tan));
-    this.cmds.set("asin", executeUnaryOp(Math.asin));
-    this.cmds.set("acos", executeUnaryOp(Math.acos));
-    this.cmds.set("atan", executeUnaryOp(Math.atan));
+    this.cmdfns.set("deg_rad", executeUnaryOp(degToRad));
+    this.cmdfns.set("rad_deg", executeUnaryOp(radToDeg));
+    this.cmdfns.set("sin", executeUnaryOp(Math.sin));
+    this.cmdfns.set("cos", executeUnaryOp(Math.cos));
+    this.cmdfns.set("tan", executeUnaryOp(Math.tan));
+    this.cmdfns.set("asin", executeUnaryOp(Math.asin));
+    this.cmdfns.set("acos", executeUnaryOp(Math.acos));
+    this.cmdfns.set("atan", executeUnaryOp(Math.atan));
 
     // conversion functions
-    this.cmds.set(
+    this.cmdfns.set(
       "c_f",
       executeUnaryOp((a) => (a * 9) / 5 + 32)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "f_c",
       executeUnaryOp((a) => ((a - 32) * 5) / 9)
     );
     const KILOMETERS_PER_MILE = 1.60934;
-    this.cmds.set(
+    this.cmdfns.set(
       "mi_km",
       executeUnaryOp((a) => a * KILOMETERS_PER_MILE)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "km_mi",
       executeUnaryOp((a) => a / KILOMETERS_PER_MILE)
     );
     const FEET_PER_METER = 3.28084;
-    this.cmds.set(
+    this.cmdfns.set(
       "m_ft",
       executeUnaryOp((a) => a * FEET_PER_METER)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "ft_m",
       executeUnaryOp((a) => a / FEET_PER_METER)
     );
@@ -287,39 +280,39 @@ export class Command {
       };
     };
 
-    this.cmds.set("+", executeBinaryOp(R.add));
-    this.cmds.set("-", executeBinaryOp(R.subtract));
-    this.cmds.set("x", executeBinaryOp(R.multiply));
-    this.cmds.set("/", executeBinaryOp(R.divide));
-    this.cmds.set("%", executeBinaryOp(R.modulo));
-    this.cmds.set("^", executeBinaryOp(Math.pow));
-    this.cmds.set("min", executeBinaryOp(Math.min));
-    this.cmds.set("max", executeBinaryOp(Math.max));
-    this.cmds.set(
+    this.cmdfns.set("+", executeBinaryOp(R.add));
+    this.cmdfns.set("-", executeBinaryOp(R.subtract));
+    this.cmdfns.set("x", executeBinaryOp(R.multiply));
+    this.cmdfns.set("/", executeBinaryOp(R.divide));
+    this.cmdfns.set("%", executeBinaryOp(R.modulo));
+    this.cmdfns.set("^", executeBinaryOp(Math.pow));
+    this.cmdfns.set("min", executeBinaryOp(Math.min));
+    this.cmdfns.set("max", executeBinaryOp(Math.max));
+    this.cmdfns.set(
       "nroot",
       executeBinaryOp((a, b) => Math.pow(a, 1 / b))
     );
     const gcd = (a: number, b: number): number => (b === 0 ? a : gcd(b, a % b));
-    this.cmds.set("gcd" as string, executeBinaryOp(gcd));
-    this.cmds.set(
+    this.cmdfns.set("gcd" as string, executeBinaryOp(gcd));
+    this.cmdfns.set(
       "logn",
       executeBinaryOp((a, b) => Math.log(a) / Math.log(b))
     );
 
     // bitwise binary functions
-    this.cmds.set(
+    this.cmdfns.set(
       "and",
       executeBinaryOp((a, b) => a & b)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "nand",
       executeBinaryOp((a, b) => ~(a & b))
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "nor",
       executeBinaryOp((a, b) => ~(a | b))
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "not",
       executeUnaryOp((a) => ~a)
     );
@@ -331,79 +324,85 @@ export class Command {
       }
       return count;
     };
-    this.cmds.set("ones", executeUnaryOp(countOnes));
-    this.cmds.set(
+    this.cmdfns.set("ones", executeUnaryOp(countOnes));
+    this.cmdfns.set(
       "or",
       executeBinaryOp((a, b) => a | b)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "xor",
       executeBinaryOp((a, b) => a ^ b)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "xnor",
       executeBinaryOp((a, b) => ~(a ^ b))
     );
-    this.cmds.set(
+    this.cmdfns.set(
       ">>",
       executeBinaryOp((a, b) => a >> b)
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "<<",
       executeBinaryOp((a, b) => a << b)
     );
 
     // stack operations
-    this.cmds.set("cls", (stck: Stack): Stack => []);
-    this.cmds.set("drop", (stck: Stack): Stack => R.dropLast(1)(stck) as Stack);
-    this.cmds.set("dropn", (stck: Stack): Stack => {
+    this.cmdfns.set("cls", (stck: Stack): Stack => []);
+    this.cmdfns.set(
+      "drop",
+      (stck: Stack): Stack => R.dropLast(1)(stck) as Stack
+    );
+    this.cmdfns.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return R.dropLast(a)(rest) as Stack;
     });
-    this.cmds.set("dup", (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]);
-    this.cmds.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
-    this.cmds.set("roll", (stck: Stack): Stack => {
+    this.cmdfns.set(
+      "dup",
+      (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
+    );
+    this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
+    this.cmdfns.set("roll", (stck: Stack): Stack => {
       const a = R.last(stck);
       const rest = R.dropLast(1)(stck);
       return [a, ...rest] as Stack;
     });
-    this.cmds.set("rolln", (stck: Stack): Stack => {
+    this.cmdfns.set("rolln", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
       const top = R.takeLast(n)(rest);
       const bottom = R.dropLast(n)(rest);
       return [...top, ...bottom] as Stack;
     });
-    this.cmds.set("rot", (stck: Stack): Stack => {
+    this.cmdfns.set("rot", (stck: Stack): Stack => {
       const a = R.head(stck);
       const rest = R.drop(1)(stck);
       return [...rest, a] as Stack;
     });
-    this.cmds.set("rotn", (stck: Stack): Stack => {
+    this.cmdfns.set("rotn", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
       const bottom = R.take(n)(rest);
       const top = R.drop(n)(rest);
       return [...top, ...bottom] as Stack;
     });
-    this.cmds.set("swap", (stck: Stack): Stack => {
+    this.cmdfns.set("swap", (stck: Stack): Stack => {
       const [a, b] = R.takeLast(2)(stck);
       const rest: Stack = R.dropLast(2)(stck) as Stack;
       return [...rest, b, a];
     });
 
     // ???
-    this.cmds.set(
+    this.cmdfns.set(
       "sum",
       (stck: Stack): Stack => [
         stck.reduce((sum, a) => sum + parseFloat(a), 0).toString(),
       ]
     );
-    this.cmds.set(
+    this.cmdfns.set(
       "prod",
       (stck: Stack): Stack => [
         stck.reduce((prod, a) => prod * parseFloat(a), 1).toString(),
       ]
     );
-    this.cmds.set("avg", (stck: Stack): Stack => {
+    this.cmdfns.set("avg", (stck: Stack): Stack => {
       const sum = stck.reduce((sum, a) => sum + parseFloat(a), 0);
       return [(sum / stck.length).toString()];
     });
@@ -413,7 +412,7 @@ export class Command {
     // a single number result to the top of stack
 
     // principle roots
-    this.cmds.set("proot", (stck: Stack): Stack => {
+    this.cmdfns.set("proot", (stck: Stack): Stack => {
       const [rest, a, b, c] = getStackNumber3(stck);
       const disc = b * b - 4 * a * c; // discriminant
 
@@ -445,98 +444,96 @@ export class Command {
     });
 
     // ???
-    this.cmds.set("io", (stck: Stack): Stack => {
+    this.cmdfns.set("io", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [
         ...rest,
         ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
       ];
     });
-    this.cmds.set("to", (stck: Stack): Stack => {
+    this.cmdfns.set("to", (stck: Stack): Stack => {
       const range = (from: number, end: number, step: number): number[] => {
         return to > from
           ? R.unfold((n) => (n <= end ? [n, n + Math.abs(step)] : false), from)
           : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
       };
-
       const [rest, from, to, step] = getStackNumber3(stck);
-
       return [...rest, ...range(from, to, step).map((a) => a.toString())];
     });
 
     // numeric representation conversions --------------------------------------
-    this.cmds.set("dec_hex", (stck: Stack): Stack => {
+    this.cmdfns.set("dec_hex", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(16)];
     });
-    this.cmds.set("hex_dec", (stck: Stack): Stack => {
+    this.cmdfns.set("hex_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 16);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
-    this.cmds.set("dec_bin", (stck: Stack): Stack => {
+    this.cmdfns.set("dec_bin", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(2)];
     });
-    this.cmds.set("bin_dec", (stck: Stack): Stack => {
+    this.cmdfns.set("bin_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 2);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
-    this.cmds.set("dec_oct", (stck: Stack): Stack => {
+    this.cmdfns.set("dec_oct", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(8)];
     });
-    this.cmds.set("oct_dec", (stck: Stack): Stack => {
+    this.cmdfns.set("oct_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 8);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
-    this.cmds.set("hex_bin", (stck: Stack): Stack => {
+    this.cmdfns.set("hex_bin", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 16);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString(2)];
     });
-    this.cmds.set("bin_hex", (stck: Stack): Stack => {
+    this.cmdfns.set("bin_hex", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 2);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString(16)];
     });
-    this.cmds.set("dec_asc", (stck: Stack): Stack => {
+    this.cmdfns.set("dec_asc", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, String.fromCharCode(a)];
     });
-    this.cmds.set("asc_dec", (stck: Stack): Stack => {
+    this.cmdfns.set("asc_dec", (stck: Stack): Stack => {
       const a: number = (R.last(stck) ?? "").charCodeAt(0);
       const rest: Stack = R.dropLast(1)(stck) as Stack;
       return [...rest, a.toString()];
     });
 
     // user storage ------------------------------------------------------------
-    this.cmds.set("store", (stck: Stack): Stack => {
+    this.cmdfns.set("store", (stck: Stack): Stack => {
       const [value, name] = R.takeLast(2)(stck);
       const rest: Stack = R.dropLast(2)(stck) as Stack;
-      console.log("store cmd", { name, value, rest });
-      this.userCmds.set(name, [value]);
+      this.userCmdOps.set(name, [value]);
       return rest;
     });
 
     // higher-order functions --------------------------------------------------
-    this.cmds.set(this.udfStartChar, (stck: Stack): Stack => {
-      console.log("setting loadingUserDefFunc to {true}");
+    this.cmdfns.set(this.udfStartChar, (stck: Stack): Stack => {
       this.loadingUserDefFunc = true;
       return [...stck];
     });
-    this.cmds.set("map", (stck: Stack): Stack => {
+    this.cmdfns.set("map", (stck: Stack): Stack => {
+      const lambdaOps = this.userCmdOps.get(this.lambda)!;
       const outStck: Stack = stck
-        .map((a) => this.evaluateOps(this.userCmds.get(this.lambda)!)([a]))
+        .map((a) => this.evaluateOps(lambdaOps)([a]))
         .flat();
       return outStck;
     });
-    this.cmds.set("fold", (stck: Stack): Stack => {
+    this.cmdfns.set("fold", (stck: Stack): Stack => {
+      const lambdaOps = this.userCmdOps.get(this.lambda)!;
       let interimStack: Stack = stck;
       while (interimStack.length > 1) {
-        interimStack = this.evaluateOps(this.userCmds.get(this.lambda)!)(interimStack);
+        interimStack = this.evaluateOps(lambdaOps)(interimStack);
       }
       return interimStack;
     });

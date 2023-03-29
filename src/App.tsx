@@ -52,8 +52,6 @@ function App() {
   };
 
   const onEnter = (expr: Sexpr) => {
-    console.log("evaluating expression = ", expr);
-
     // evaluate expression and set output stack to result
     const ops = exprToOps(expr);
     setOutputStack(C.evaluateOps(ops)(outputStack));
