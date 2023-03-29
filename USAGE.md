@@ -4,7 +4,6 @@
 - [memory usage](#commands-memory-usage)
 - [maths](#commands-maths)
 - [conversion](#commands-conversion)
-- [file usage](#commands-file-usage)
 - [user-defined functions](#commands-user-defined-functions)
 - [higher-order functions](#commands-higher-order-functions)
 
