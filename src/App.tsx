@@ -4,7 +4,7 @@ import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
-const APPNAME = "Coren One";
+const APPNAME = "Coren ( one )";
 const VERSION = "ver. 0.0.9";
 
 const C = new CommandInterpreter();
@@ -66,7 +66,7 @@ function App() {
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h4" className="title" color="secondary">
+        <Typography variant="h5" className="title" color="secondary">
           {APPNAME}
         </Typography>
         <Typography
@@ -107,7 +107,7 @@ function App() {
             color="secondary"
             sx={{ fontFamily: "Monospace" }}
           >
-            {outputStack.length === 0 ? "( stack empty )" : ""}
+            {outputStack.length === 0 ? "( stack clear )" : ""}
           </Typography>
           {[...outputStack].reverse().map((entry, i) => (
             <div key={i}>
