@@ -4,8 +4,8 @@ import { Grid, Typography, TextField, IconButton } from "@mui/material";
 import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
-const NAME = "Coren";
-const VERSION = "ver. 0.0.8";
+const APPNAME = "Coren One";
+const VERSION = "ver. 0.0.9";
 
 type Ops = string[]; // operations list
 type Op = string; // operation
@@ -66,7 +66,7 @@ function App() {
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
         <Typography variant="h4" className="title" color="secondary">
-          {NAME}
+          {APPNAME}
         </Typography>
         <Typography
           variant="body2"
