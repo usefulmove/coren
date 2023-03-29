@@ -23,7 +23,7 @@ import * as R from "ramda";
 type Stack = string[]; // stack
 type Op = string; // operation
 type Ops = string[]; // operations list
-type StackFn = (input: Stack) => Stack; // stack transform functions (morphisms)
+type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.last(stck) ?? "";
