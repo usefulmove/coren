@@ -79,30 +79,25 @@ export class CommandInterpreter {
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack => {
-      const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
-        switch (this.loadingUserFunction) {
-          case false: // default (general case) - not loading user function
-            switch (this.cmdfns.has(op)) {
-              case true: // command (known)
-                // execute command function on interim stack
-                return this.cmdfns.get(op)!(interimStack)!;
-              case false:
-                if (this.userCmdOps.has(op)) {
-                  // recursive call to evaluateOps
-                  const ops = this.userCmdOps.get(op)!;
-                  const updateStack = this.evaluateOps(ops);
-                  return updateStack(interimStack);
-                } else {
-                  return [...interimStack, op]; // value (unknown command)
-                }
-            }
-          case true:
-            this.loadingUserFunction = this.loadUserFunction(op);
-            return [...interimStack];
+      return ops.reduce((interimStack: Stack, op: Op): Stack => {
+        // loading user function
+        if (this.loadingUserFunction) {
+          this.loadingUserFunction = this.loadUserFunction(op);
+          return [...interimStack];
         }
+        // built-in command - run command function on interim stack
+        if (this.cmdfns.has(op)) {
+          return this.cmdfns.get(op)!(interimStack);
+        }
+        // user function - make recursive call to evaluateOps using stored ops
+        if (this.userCmdOps.has(op)) {
+          const uops = this.userCmdOps.get(op)!;
+          const updateStack = this.evaluateOps(uops);
+          return updateStack(interimStack);
+        }
+        // unknown (not built-in or user command) - add to stack
+        return [...interimStack, op]; 
       }, stck);
-
-      return out_st;
     };
 
   // user-defined functions
@@ -482,10 +477,8 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("map", (stck: Stack): Stack => {
       const lambdaOps = this.userCmdOps.get(this.lambdaOp)!;
-      const outStck: Stack = stck
-        .map((a) => this.evaluateOps(lambdaOps)([a]))
-        .flat();
-      return outStck;
+      const evaluateLambda = (s: string) => this.evaluateOps(lambdaOps)([s]);
+      return R.map(evaluateLambda)(stck).flat();
     });
     this.cmdfns.set("fold", (stck: Stack): Stack => {
       const lambdaOps = this.userCmdOps.get(this.lambdaOp)!;
@@ -503,22 +496,19 @@ export class CommandInterpreter {
       R.multiply(a)(parseFloat(s));
     this.cmdfns.set(
       "sum",
-      (stck: Stack): Stack => [stck.reduce(addParsed, 0).toString()]
+      (stck: Stack): Stack => [R.reduce(addParsed, 0)(stck).toString()]
     );
     this.cmdfns.set(
       "prod",
-      (stck: Stack): Stack => [stck.reduce(multiplyParsed, 1).toString()]
+      (stck: Stack): Stack => [R.reduce(multiplyParsed, 1)(stck).toString()]
     );
     this.cmdfns.set("avg", (stck: Stack): Stack => {
-      const sum = stck.reduce(addParsed, 0);
+      const sum = R.reduce(addParsed, 0)(stck);
       return [(sum / stck.length).toString()];
     });
     this.cmdfns.set("io", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
-      return [
-        ...rest,
-        ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
-      ];
+      return [...rest, ...R.map(R.toString)(R.range(1)(a + 1))];
     });
     this.cmdfns.set("to", (stck: Stack): Stack => {
       const range = (from: number, end: number, step: number): number[] => {
@@ -527,7 +517,7 @@ export class CommandInterpreter {
           : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
       };
       const [rest, from, to, step] = getStackNumber3(stck);
-      return [...rest, ...range(from, to, step).map((a) => a.toString())];
+      return [...rest, ...R.map(R.toString)(range(from, to, step))];
     });
   }
 }
