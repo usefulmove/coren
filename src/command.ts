@@ -1,4 +1,3 @@
-import { stackClasses } from "@mui/system";
 import * as R from "ramda";
 
 /*
@@ -219,7 +218,7 @@ export class Command {
     );
     this.cmdfns.set(
       "!",
-      executeUnaryOp((a: number) => R.product(R.range(1)(a)))
+      executeUnaryOp((a: number) => R.product(R.range(1)(a + 1)))
     );
 
     // trigonometric functions
@@ -385,20 +384,18 @@ export class Command {
     });
 
     // ???
+    const addFloat = (sum: number, b: string): number => sum + parseFloat(b);
+    const multFloat = (sum: number, b: string): number => sum * parseFloat(b);
     this.cmdfns.set(
       "sum",
-      (stck: Stack): Stack => [
-        stck.reduce((sum, a) => sum + parseFloat(a), 0).toString(),
-      ]
+      (stck: Stack): Stack => [stck.reduce(addFloat, 0).toString()]
     );
     this.cmdfns.set(
       "prod",
-      (stck: Stack): Stack => [
-        stck.reduce((prod, a) => prod * parseFloat(a), 1).toString(),
-      ]
+      (stck: Stack): Stack => [stck.reduce(multFloat, 1).toString()]
     );
     this.cmdfns.set("avg", (stck: Stack): Stack => {
-      const sum = stck.reduce((sum, a) => sum + parseFloat(a), 0);
+      const sum = stck.reduce(addFloat, 0);
       return [(sum / stck.length).toString()];
     });
 
