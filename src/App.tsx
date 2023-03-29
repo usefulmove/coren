@@ -52,17 +52,15 @@ function App() {
   };
 
   const onEnter = (expr: Sexpr) => {
-    // evaluate expression and set output stack to result
-    const ops = exprToOps(expr);
-    setOutputStack(C.evaluateOps(ops)(outputStack));
+    // evaluate expression and update output stack with result
+    const updateStack = C.evaluateOps(exprToOps(expr));
+    setOutputStack(updateStack(outputStack));
 
-    clearInput(); // clear input field
-
-    // update user command names to see if new command has been added
-    setUserCmdList(C.getUserCmdNames());
+    clearInputField();
+    setUserCmdList(C.getUserCmdNames()); // update user command display
   };
 
-  const clearInput = () => setInputFieldValue("");
+  const clearInputField = () => setInputFieldValue("");
 
   return (
     <Grid container padding={4} spacing={3}>
