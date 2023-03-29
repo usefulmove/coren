@@ -1,7 +1,7 @@
 import "./App.css";
 import { useState } from "react";
 import { Grid, Typography, TextField, IconButton } from "@mui/material";
-import { Command } from "./command";
+import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
 const NAME = "Coren";
@@ -10,7 +10,7 @@ const VERSION = "ver. 0.0.8";
 type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-expression
-const C = new Command();
+const C = new CommandInterpreter();
 
 function App() {
   const [outputStack, setOutputStack] = useState<string[]>([]);

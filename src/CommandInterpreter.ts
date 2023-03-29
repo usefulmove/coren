@@ -63,7 +63,7 @@ const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
   return [rest, a, b, c];
 };
 
-export class Command {
+export class CommandInterpreter {
   cmdfns = new Map<string, StackFn>(); // built-in commands
   userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
 
