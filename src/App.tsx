@@ -7,10 +7,11 @@ import { GitHub, HelpOutline } from "@mui/icons-material";
 const APPNAME = "Coren One";
 const VERSION = "ver. 0.0.9";
 
+const C = new CommandInterpreter();
+
 type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-expression
-const C = new CommandInterpreter();
 
 function App() {
   const [outputStack, setOutputStack] = useState<string[]>([]);
