@@ -383,22 +383,6 @@ export class Command {
       return [...rest, b, a];
     });
 
-    // ???
-    const addFloat = (sum: number, b: string): number => sum + parseFloat(b);
-    const multFloat = (sum: number, b: string): number => sum * parseFloat(b);
-    this.cmdfns.set(
-      "sum",
-      (stck: Stack): Stack => [stck.reduce(addFloat, 0).toString()]
-    );
-    this.cmdfns.set(
-      "prod",
-      (stck: Stack): Stack => [stck.reduce(multFloat, 1).toString()]
-    );
-    this.cmdfns.set("avg", (stck: Stack): Stack => {
-      const sum = stck.reduce(addFloat, 0);
-      return [(sum / stck.length).toString()];
-    });
-
     // simple 3-ary operations ------------------------------------------------
     // take three numbers from the stack and apply a binary operation and return
     // a single number result to the top of stack
@@ -435,25 +419,7 @@ export class Command {
       ];
     });
 
-    // ???
-    this.cmdfns.set("io", (stck: Stack): Stack => {
-      const [rest, a] = getStackNumber(stck);
-      return [
-        ...rest,
-        ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
-      ];
-    });
-    this.cmdfns.set("to", (stck: Stack): Stack => {
-      const range = (from: number, end: number, step: number): number[] => {
-        return to > from
-          ? R.unfold((n) => (n <= end ? [n, n + Math.abs(step)] : false), from)
-          : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
-      };
-      const [rest, from, to, step] = getStackNumber3(stck);
-      return [...rest, ...range(from, to, step).map((a) => a.toString())];
-    });
-
-    // numeric representation conversions --------------------------------------
+    // numeric representation conversion (non-simple unary) --------------------
     this.cmdfns.set("dec_hex", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, a.toString(16)];
@@ -529,6 +495,39 @@ export class Command {
         interimStack = updateStack(interimStack);
       }
       return interimStack;
+    });
+
+    // general stack transformation --------------------------------------------
+    const addParsed = (a: number, s: string): number => R.add(a)(parseFloat(s));
+    const multiplyParsed = (a: number, s: string): number =>
+      R.multiply(a)(parseFloat(s));
+    this.cmdfns.set(
+      "sum",
+      (stck: Stack): Stack => [stck.reduce(addParsed, 0).toString()]
+    );
+    this.cmdfns.set(
+      "prod",
+      (stck: Stack): Stack => [stck.reduce(multiplyParsed, 1).toString()]
+    );
+    this.cmdfns.set("avg", (stck: Stack): Stack => {
+      const sum = stck.reduce(addParsed, 0);
+      return [(sum / stck.length).toString()];
+    });
+    this.cmdfns.set("io", (stck: Stack): Stack => {
+      const [rest, a] = getStackNumber(stck);
+      return [
+        ...rest,
+        ...Array.from(Array(a).keys()).map((a) => (a + 1).toString()),
+      ];
+    });
+    this.cmdfns.set("to", (stck: Stack): Stack => {
+      const range = (from: number, end: number, step: number): number[] => {
+        return to > from
+          ? R.unfold((n) => (n <= end ? [n, n + Math.abs(step)] : false), from)
+          : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
+      };
+      const [rest, from, to, step] = getStackNumber3(stck);
+      return [...rest, ...range(from, to, step).map((a) => a.toString())];
     });
   }
 }
