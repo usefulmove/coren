@@ -2,29 +2,23 @@ import { stackClasses } from "@mui/system";
 import * as R from "ramda";
 
 /*
+  Note: Base data structure is an array used as a stack. Atoms on the list
+  are either be symbols (commands) or values. Each calculation is a list of
+  operations that are processed in order of occurrence. This is an imple-
+  mentation of a list processor (LISP) for Reverse Polish Notation (RPN)
+  S-expressions (sexp).
 
-    note: base data structure is an array used as
-    a stack. atoms on the list are either be symbols
-    (commands) or values. each calculation is a list
-    of operations that are processed in order of
-    occurrence. this is an implementation of a list
-    processor (lisp) for reverse polish notation
-    s-expressions (sexp).
+    operations list structure
+      ( object : command or value )
+      "5"
+      "sqrt"
+      "1
+      "-"
+      "2"
+      "/"
 
-      operations list structure
-        ( object : command or value )
-        "5"
-        "sqrt"
-        "1
-        "-"
-        "2"
-        "/"
-
-    a list evaluation engine takes the list of
-    strings and executes the corresponding oper-
-    ations then returns the resulting mutated
-    stack.
-
+  A list evaluation engine takes the list of strings and executes the 
+  corresponding operations then returns the resulting mutated stack.
 */
 
 type Stack = string[]; // stack
