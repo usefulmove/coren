@@ -68,12 +68,12 @@ export class Command {
   cmdfns = new Map<string, StackFn>(); // built-in commands
   userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
 
-  loadingUserDefFunc = false;
+  loadingUserFunction = false;
 
   // user-defined functions
   public getUserCmdNames = (): string[] => {
     const names = [...this.userCmdOps.keys()];
-    return names.filter((x) => x !== this.lambda);
+    return names.filter((x) => x !== this.lambdaOp);
   };
 
   // evaluateOps
@@ -81,7 +81,7 @@ export class Command {
     (ops: Ops) =>
     (stck: Stack): Stack => {
       const out_st: Stack = ops.reduce((interimStack: Stack, op: Op): Stack => {
-        switch (this.loadingUserDefFunc) {
+        switch (this.loadingUserFunction) {
           case false: // default (general case) - not loading user function
             switch (this.cmdfns.has(op)) {
               case true: // command (known)
@@ -98,7 +98,7 @@ export class Command {
                 }
             }
           case true:
-            this.loadingUserDefFunc = this.loadUserDefFunc(op);
+            this.loadingUserFunction = this.loadUserFunction(op);
             return [...interimStack];
         }
       }, stck);
@@ -107,37 +107,37 @@ export class Command {
     };
 
   // user-defined functions
-  lambda: string = "_";
-  udfStartChar: string = "(";
-  udfEndChar: string = ")";
+  lambdaOp: string = "_";
+  userfnStartChar: string = "(";
+  userfnEndChar: string = ")";
 
-  loadUserDefFunc = (() => {
+  loadUserFunction = (() => {
     let instantiated = false;
-    let name: string = "";
-    let depth: number = 0;
+    let functionName: string;
+    let functionDepth: number = 0; // function nesting depth
 
     return (op: Op): boolean => {
       switch (instantiated) {
         case false:
-          name = op;
-          this.userCmdOps.set(name, []);
+          functionName = op;
+          this.userCmdOps.set(functionName, []);
           instantiated = true;
           return true; // continue loading
         case true:
-          if (op === this.udfEndChar) {
-            switch (depth) {
+          if (op === this.userfnEndChar) {
+            switch (functionDepth) {
               case 0:
                 // stop loading (recording) user function
                 instantiated = false; // reset
                 return false;
               default:
-                depth -= 1; // continue loading
+                functionDepth -= 1; // continue loading
             }
           }
-          if (op === this.udfStartChar) {
-            depth += 1;
+          if (op === this.userfnStartChar) {
+            functionDepth += 1;
           }
-          this.userCmdOps.get(name)!.push(op);
+          this.userCmdOps.get(functionName)!.push(op);
           return true; // continue loading
       }
     };
@@ -512,19 +512,19 @@ export class Command {
     });
 
     // higher-order functions --------------------------------------------------
-    this.cmdfns.set(this.udfStartChar, (stck: Stack): Stack => {
-      this.loadingUserDefFunc = true;
+    this.cmdfns.set(this.userfnStartChar, (stck: Stack): Stack => {
+      this.loadingUserFunction = true;
       return [...stck];
     });
     this.cmdfns.set("map", (stck: Stack): Stack => {
-      const lambdaOps = this.userCmdOps.get(this.lambda)!;
+      const lambdaOps = this.userCmdOps.get(this.lambdaOp)!;
       const outStck: Stack = stck
         .map((a) => this.evaluateOps(lambdaOps)([a]))
         .flat();
       return outStck;
     });
     this.cmdfns.set("fold", (stck: Stack): Stack => {
-      const lambdaOps = this.userCmdOps.get(this.lambda)!;
+      const lambdaOps = this.userCmdOps.get(this.lambdaOp)!;
       const updateStack = this.evaluateOps(lambdaOps);
       let interimStack: Stack = stck;
       while (interimStack.length > 1) {
