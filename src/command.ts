@@ -95,10 +95,10 @@ export class Command {
                 return this.cmdfns.get(op)!(interimStack)!;
               case false:
                 if (this.userCmdOps.has(op)) {
-                  const updatedStck = this.evaluateOps(
-                    this.userCmdOps.get(op)!
-                  )(interimStack); // recursive call to evaluateOps
-                  return updatedStck;
+                  // recursive call to evaluateOps
+                  const ops = this.userCmdOps.get(op)!;
+                  const updateStack = this.evaluateOps(ops);
+                  return updateStack(interimStack);
                 } else {
                   return [...interimStack, op]; // value (unknown command)
                 }
@@ -531,9 +531,10 @@ export class Command {
     });
     this.cmdfns.set("fold", (stck: Stack): Stack => {
       const lambdaOps = this.userCmdOps.get(this.lambda)!;
+      const updateStack = this.evaluateOps(lambdaOps);
       let interimStack: Stack = stck;
       while (interimStack.length > 1) {
-        interimStack = this.evaluateOps(lambdaOps)(interimStack);
+        interimStack = updateStack(interimStack);
       }
       return interimStack;
     });
