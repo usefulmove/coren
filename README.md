@@ -3,4 +3,4 @@ A streamlined, stack-based interpreter developed in React. The interpreter bring
 
 ### [Coren](https://www.coren.one) (https://www.coren.one)
 
-#### [Usage Guide](https://github.com/usefulmove/coren/blob/main/USAGE.md)
+### [Usage Guide](https://github.com/usefulmove/coren/blob/main/USAGE.md)
