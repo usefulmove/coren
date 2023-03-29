@@ -223,8 +223,9 @@ export class Command {
     );
 
     // trigonometric functions
-    const radToDeg = (a: number): number => (a * 180) / Math.PI;
-    const degToRad = (a: number): number => (a * Math.PI) / 180;
+    const DEG_PER_RAD = 180 / Math.PI;
+    const radToDeg = (a: number): number => a * DEG_PER_RAD;
+    const degToRad = (a: number): number => a / DEG_PER_RAD;
     this.cmdfns.set("deg_rad", executeUnaryOp(degToRad));
     this.cmdfns.set("rad_deg", executeUnaryOp(radToDeg));
     this.cmdfns.set("sin", executeUnaryOp(Math.sin));
