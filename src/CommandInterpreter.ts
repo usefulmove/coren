@@ -87,12 +87,13 @@ export class CommandInterpreter {
         }
         // built-in command - run command function on interim stack
         if (this.cmdfns.has(op)) {
-          return this.cmdfns.get(op)!(interimStack);
+          const f = this.cmdfns.get(op);
+          return f!(interimStack);
         }
         // user function - make recursive call to evaluateOps using stored ops
         if (this.userCmdOps.has(op)) {
-          const uops = this.userCmdOps.get(op)!;
-          const updateStack = this.evaluateOps(uops);
+          const userOps = this.userCmdOps.get(op)!;
+          const updateStack = this.evaluateOps(userOps);
           return updateStack(interimStack);
         }
         // unknown (not built-in or user command) - add to stack
