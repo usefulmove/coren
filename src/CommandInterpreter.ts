@@ -103,8 +103,8 @@ export class CommandInterpreter {
 
   // user-defined functions
   lambdaOp: string = "_";
-  userfnStartChar: string = "(";
-  userfnEndChar: string = ")";
+  userfnStart: string = "(";
+  userfnEnd: string = ")";
 
   loadUserFunction = (() => {
     // state maintained within closure of iife
@@ -121,7 +121,7 @@ export class CommandInterpreter {
         return true; // continue loading
       }
 
-      if (op === this.userfnEndChar) {
+      if (op === this.userfnEnd) {
         if (functionDepth === 0) {
           // stop loading (recording) user function
           instantiated = false; // reset state
@@ -132,7 +132,7 @@ export class CommandInterpreter {
         }
       }
 
-      if (op === this.userfnStartChar) {
+      if (op === this.userfnStart) {
         functionDepth += 1;
         return true; // continue loading
       }
@@ -476,7 +476,7 @@ export class CommandInterpreter {
     });
 
     // higher-order functions --------------------------------------------------
-    this.cmdfns.set(this.userfnStartChar, (stck: Stack): Stack => {
+    this.cmdfns.set(this.userfnStart, (stck: Stack): Stack => {
       this.loadingUserFunction = true;
       return [...stck];
     });
