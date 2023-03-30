@@ -107,34 +107,38 @@ export class CommandInterpreter {
   userfnEndChar: string = ")";
 
   loadUserFunction = (() => {
+    // state maintained within closure of iife
     let instantiated = false;
     let functionName: string;
-    let functionDepth: number = 0; // function nesting depth
+    let functionDepth: number; // function nesting depth
 
     return (op: Op): boolean => {
-      switch (instantiated) {
-        case false:
-          functionName = op;
-          this.userCmdOps.set(functionName, []);
-          instantiated = true;
-          return true; // continue loading
-        case true:
-          if (op === this.userfnEndChar) {
-            switch (functionDepth) {
-              case 0:
-                // stop loading (recording) user function
-                instantiated = false; // reset
-                return false;
-              default:
-                functionDepth -= 1; // continue loading
-            }
-          }
-          if (op === this.userfnStartChar) {
-            functionDepth += 1;
-          }
-          this.userCmdOps.get(functionName)!.push(op);
-          return true; // continue loading
+      if (!instantiated) {
+        functionName = op;
+        this.userCmdOps.set(functionName, []);
+        functionDepth = 0;
+        instantiated = true;
+        return true; // continue loading
       }
+
+      if (op === this.userfnEndChar) {
+        if (functionDepth === 0) {
+          // stop loading (recording) user function
+          instantiated = false; // reset state
+          return false;
+        } else {
+          functionDepth -= 1; // decrement function depth
+          return true; // continue loading
+        }
+      }
+
+      if (op === this.userfnStartChar) {
+        functionDepth += 1;
+        return true; // continue loading
+      }
+
+      this.userCmdOps.get(functionName)!.push(op);
+      return true; // continue loading
     };
   })();
 
