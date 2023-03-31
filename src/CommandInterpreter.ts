@@ -123,9 +123,8 @@ export class CommandInterpreter {
 
       if (op === this.userfnEnd) {
         if (functionDepth === 0) {
-          // stop loading (recording) user function
           instantiated = false; // reset state
-          return false;
+          return false; // stop loading (recording)
         } else {
           functionDepth -= 1; // decrement function depth
           return true; // continue loading
