@@ -99,7 +99,7 @@ export class CommandInterpreter {
           return updateStack(interimStack);
         }
         // unknown (not built-in or user command) - add to stack
-        return [...interimStack, op]; 
+        return [...interimStack, op];
       }, stck);
     };
 
@@ -343,10 +343,7 @@ export class CommandInterpreter {
 
     // stack operations
     this.cmdfns.set("cls", (stck: Stack): Stack => []);
-    this.cmdfns.set(
-      "drop",
-      (stck: Stack): Stack => R.init(stck) as Stack
-    );
+    this.cmdfns.set("drop", (stck: Stack): Stack => R.init(stck) as Stack);
     this.cmdfns.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return R.dropLast(a)(rest) as Stack;
@@ -486,7 +483,7 @@ export class CommandInterpreter {
       const evaluateLambda = (s: string) => this.evaluateOps(lambdaOps)([s]);
       return R.map(evaluateLambda)(stck).flat();
     });
-    this.cmdfns.set("fold", (stck: Stack): Stack => {
+    const fold = (stck: Stack): Stack => {
       const lambdaOps = this.userCmdOps.get(this.lambdaOp)!;
       const updateStack = this.evaluateOps(lambdaOps);
       let interimStack: Stack = stck;
@@ -494,7 +491,9 @@ export class CommandInterpreter {
         interimStack = updateStack(interimStack);
       }
       return interimStack;
-    });
+    };
+    this.cmdfns.set("fold", fold);
+    this.cmdfns.set("reduce", fold);
 
     // general stack morphisms ------------------------------------------------
     const addParsed = (a: number, s: string): number => R.add(a)(parseFloat(s));
