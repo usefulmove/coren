@@ -25,21 +25,23 @@ type Op = string; // operation
 type Ops = string[]; // operations list
 type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
+const iota: (n: number) => number[] = R.range(1);
+
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.last(stck) ?? "";
-  const rest: Stack = R.dropLast(1)(stck) as Stack;
+  const rest: Stack = R.init(stck) as Stack;
   return [op, rest];
 };
 
 const getStackNumber = (stck: Stack): [Stack, number] => {
   const n: number = parseFloat(R.last(stck) ?? "0");
-  const rest: Stack = R.dropLast(1)(stck) as Stack;
+  const rest: Stack = R.init(stck) as Stack;
   return [rest, n];
 };
 
 const getStackNumberHex = (stck: Stack): [Stack, number] => {
   const n: number = parseInt(R.last(stck) ?? "0", 16);
-  const rest: Stack = R.dropLast(1)(stck) as Stack;
+  const rest: Stack = R.init(stck) as Stack;
   return [rest, n];
 };
 
@@ -217,7 +219,7 @@ export class CommandInterpreter {
     );
     this.cmdfns.set(
       "!",
-      executeUnaryOp((a: number) => R.product(R.range(1)(a + 1)))
+      executeUnaryOp((a: number) => R.product(iota(a + 1)))
     );
 
     // trigonometric functions
@@ -343,7 +345,7 @@ export class CommandInterpreter {
     this.cmdfns.set("cls", (stck: Stack): Stack => []);
     this.cmdfns.set(
       "drop",
-      (stck: Stack): Stack => R.dropLast(1)(stck) as Stack
+      (stck: Stack): Stack => R.init(stck) as Stack
     );
     this.cmdfns.set("dropn", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
@@ -356,7 +358,7 @@ export class CommandInterpreter {
     this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
     this.cmdfns.set("roll", (stck: Stack): Stack => {
       const a = R.last(stck);
-      const rest = R.dropLast(1)(stck);
+      const rest = R.init(stck);
       return [a, ...rest] as Stack;
     });
     this.cmdfns.set("rolln", (stck: Stack): Stack => {
@@ -367,7 +369,7 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("rot", (stck: Stack): Stack => {
       const a = R.head(stck);
-      const rest = R.drop(1)(stck);
+      const rest = R.tail(stck);
       return [...rest, a] as Stack;
     });
     this.cmdfns.set("rotn", (stck: Stack): Stack => {
@@ -425,7 +427,7 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("hex_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 16);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
     this.cmdfns.set("dec_bin", (stck: Stack): Stack => {
@@ -434,7 +436,7 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("bin_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 2);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
     this.cmdfns.set("dec_oct", (stck: Stack): Stack => {
@@ -443,17 +445,17 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("oct_dec", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 8);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
     this.cmdfns.set("hex_bin", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 16);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString(2)];
     });
     this.cmdfns.set("bin_hex", (stck: Stack): Stack => {
       const a: number = parseInt(R.last(stck) ?? "0", 2);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString(16)];
     });
     this.cmdfns.set("dec_asc", (stck: Stack): Stack => {
@@ -462,7 +464,7 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("asc_dec", (stck: Stack): Stack => {
       const a: number = (R.last(stck) ?? "").charCodeAt(0);
-      const rest: Stack = R.dropLast(1)(stck) as Stack;
+      const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
 
@@ -512,7 +514,7 @@ export class CommandInterpreter {
     });
     this.cmdfns.set("io", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
-      return [...rest, ...R.map(R.toString)(R.range(1)(a + 1))];
+      return [...rest, ...R.map(R.toString)(iota(a + 1))];
     });
     this.cmdfns.set("to", (stck: Stack): Stack => {
       const range = (from: number, end: number, step: number): number[] => {
