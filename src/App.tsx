@@ -1,6 +1,12 @@
 import "./App.css";
 import { useState } from "react";
-import { Grid, Typography, TextField, IconButton } from "@mui/material";
+import {
+  Grid,
+  Typography,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
 import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
@@ -161,15 +167,22 @@ function App() {
         </Typography>
       </Grid>
       <Grid item xs={12}>
-        <IconButton
-          target="_blank"
-          href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
-        >
-          <HelpOutline color="secondary" fontSize="small" />
-        </IconButton>
-        <IconButton target="_blank" href="https://github.com/usefulmove/coren/">
-          <GitHub color="secondary" fontSize="small" />
-        </IconButton>
+        <Tooltip title="Usage Guide" arrow enterDelay={500}>
+          <IconButton
+            target="_blank"
+            href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
+          >
+            <HelpOutline color="secondary" fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="GitHub" arrow enterDelay={500}>
+          <IconButton
+            target="_blank"
+            href="https://github.com/usefulmove/coren/"
+          >
+            <GitHub color="secondary" fontSize="small" />
+          </IconButton>
+        </Tooltip>
       </Grid>
     </Grid>
   );
