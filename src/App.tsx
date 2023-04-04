@@ -27,7 +27,10 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(-1);
 
   const exprToOps = (expr: Sexpr): Ops =>
-    expr.split(" ").filter((op: Op) => op.length > 0);
+    expr
+      .split(" ")
+      .filter((op: Op) => op.length > 0)
+      .map((op) => op.toLowerCase());
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowUp") {
@@ -54,17 +57,16 @@ function App() {
         setCommandHistory((prevHistory) => [...prevHistory, inputFieldValue]);
         setCurrentIndex(-1);
       }
-      onEnter((e.target as HTMLInputElement).value);
+
+      const expr = (e.target as HTMLInputElement).value;
+
+      // evaluate expression and update output stack with result
+      const updateStack = C.evaluateOps(exprToOps(expr));
+      setOutputStack(updateStack(outputStack));
+
+      clearInputField();
+      setUserCmdList(C.getUserCmdNames()); // update user command display
     }
-  };
-
-  const onEnter = (expr: Sexpr) => {
-    // evaluate expression and update output stack with result
-    const updateStack = C.evaluateOps(exprToOps(expr));
-    setOutputStack(updateStack(outputStack));
-
-    clearInputField();
-    setUserCmdList(C.getUserCmdNames()); // update user command display
   };
 
   const clearInputField = () => setInputFieldValue("");
