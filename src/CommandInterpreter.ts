@@ -74,14 +74,14 @@ export class CommandInterpreter {
   // user-defined functions
   public getUserCmdNames = (): string[] => {
     const names = [...this.userCmdOps.keys()];
-    return names.filter((x) => x !== this.lambdaOp);
+    return R.reject((x) => x === this.lambdaOp)(names);
   };
 
-  // evaluateOps
+  // evaluateOps :: Ops -> Stack -> Stack
   public evaluateOps =
     (ops: Ops) =>
-    (stck: Stack): Stack => {
-      return ops.reduce((interimStack: Stack, op: Op): Stack => {
+    (stck: Stack): Stack =>
+      R.reduce((interimStack: Stack, op: Op): Stack => {
         // loading user function
         if (this.loadingUserFunction) {
           this.loadingUserFunction = this.loadUserFunction(op);
@@ -100,8 +100,7 @@ export class CommandInterpreter {
         }
         // unknown (not built-in or user command) - add to stack
         return [...interimStack, op];
-      }, stck);
-    };
+      }, stck)(ops);
 
   // user-defined functions
   lambdaOp: string = "_";
