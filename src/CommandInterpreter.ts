@@ -16,7 +16,7 @@ import * as R from "ramda";
       "2"
       "/"
 
-  A list evaluation engine takes the list of strings and executes the 
+  A list evaluation engine takes the list of strings and executes the
   corresponding operations then returns the resulting mutated stack.
 */
 
@@ -497,24 +497,35 @@ export class CommandInterpreter {
 
     // RGB color conversions ---------------------------------------------------
 
-    // clampRGB :: number -> number
-    const clampRGB = R.pipe(R.clamp(0, 255), Math.round);
+    // clampRGBval :: number -> number
+    const clampRGBval = R.pipe(R.clamp(0, 255), Math.round);
 
-    // convertToHex :: string -> string
-    const convertToHex = R.pipe(
-      parseFloat,
-      clampRGB,
-      (n) => n.toString(16),
-      (s) => (s.length === 1 ? "0" + s : s)
-    );
+    // convertToHexString :: number ->string -> string
+    const convertToHexString = (a: number) => (sRGB: string) => {
+      return R.pipe(
+        parseFloat,
+        (n) => n * a,
+        clampRGBval,
+        (n) => n.toString(16),
+        (s) => (s.length === 1 ? "0" + s : s)
+      )(sRGB);
+    };
 
-    // convertRGB :: string[] -> string
-    const convertRGB = R.pipe(R.map(convertToHex), R.reduce(R.concat, "#"));
+    // convertRGB :: number -> string[] -> string
+    const convertRGB = (a: number) =>
+      R.pipe(R.map(convertToHexString(a)), R.reduce(R.concat, "#"));
 
     this.cmdfns.set("rgb", (stck: Stack): Stack => {
-      const rgb: string[] = R.takeLast(3)(stck);
+      const sRGBarr: string[] = R.takeLast(3)(stck);
       const rest: Stack = R.dropLast(3)(stck) as Stack;
-      return [...rest, convertRGB(rgb)];
+      return [...rest, convertRGB(1)(sRGBarr)];
+    });
+
+    this.cmdfns.set("rgbx", (stck: Stack): Stack => {
+      const [rest, a] = getStackNumber(stck);
+      const sRGBarr: string[] = R.takeLast(3)(rest);
+      const rest2: Stack = R.dropLast(3)(rest) as Stack;
+      return [...rest2, convertRGB(a)(sRGBarr)];
     });
 
     // general stack morphisms ------------------------------------------------
