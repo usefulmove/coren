@@ -169,11 +169,17 @@ export class CommandInterpreter {
   // constructor - create built-in commands
   constructor() {
     // simple nullary operations -----------------------------------------------
+
+    // pi command
     this.cmdfns.set(
       "pi",
       (stck: Stack): Stack => [...stck, Math.PI.toString()]
     );
+
+    // e command
     this.cmdfns.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
+
+    // magic8 command
     this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
       return [...stck, this.magic8.get(ind) ?? "error"];
@@ -191,32 +197,61 @@ export class CommandInterpreter {
       };
     };
 
+    // abs command
     this.cmdfns.set("abs", executeUnaryOp(Math.abs));
+
+    // chs command
     this.cmdfns.set(
       "chs",
       executeUnaryOp((a: number) => -a)
     );
+
+    // floor command
     this.cmdfns.set("floor", executeUnaryOp(Math.floor));
+
+    // ceil command
     this.cmdfns.set("ceil", executeUnaryOp(Math.ceil));
+
+    // inv command
     this.cmdfns.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
     );
+
+    // ln command
     this.cmdfns.set("ln", executeUnaryOp(Math.log));
+
+    // log command
     this.cmdfns.set("log", executeUnaryOp(Math.log10));
+
+    // log2 command
     this.cmdfns.set("log2", executeUnaryOp(Math.log2));
+
+    // log10 command
     this.cmdfns.set("log10", executeUnaryOp(Math.log10));
+
+    // rand command
     this.cmdfns.set(
       "rand",
       executeUnaryOp((a) => Math.floor(a * Math.random()))
     );
+
+    // round command
     this.cmdfns.set("round", executeUnaryOp(Math.round));
+
+    // sgn command
     this.cmdfns.set("sgn", executeUnaryOp(Math.sign));
+
+    // sqrt command
     this.cmdfns.set("sqrt", executeUnaryOp(Math.sqrt));
+
+    // tng command
     this.cmdfns.set(
       "tng",
       executeUnaryOp((a) => (a * (a + 1)) / 2)
     );
+
+    // ! (factorial) command
     this.cmdfns.set(
       "!",
       executeUnaryOp((a: number) => R.product(iota(a + 1)))
@@ -224,40 +259,72 @@ export class CommandInterpreter {
 
     // trigonometric functions
     const DEG_PER_RAD = 180 / Math.PI;
+    // radToDeg :: number -> number
     const radToDeg = (a: number): number => a * DEG_PER_RAD;
+    // degToRad :: number -> number
     const degToRad = (a: number): number => a / DEG_PER_RAD;
+
+    // deg_rad command
     this.cmdfns.set("deg_rad", executeUnaryOp(degToRad));
+
+    // rad_deg command
     this.cmdfns.set("rad_deg", executeUnaryOp(radToDeg));
+
+    // sin command
     this.cmdfns.set("sin", executeUnaryOp(Math.sin));
+
+    // cos command
     this.cmdfns.set("cos", executeUnaryOp(Math.cos));
+
+    // tan command
     this.cmdfns.set("tan", executeUnaryOp(Math.tan));
+
+    // asin command
     this.cmdfns.set("asin", executeUnaryOp(Math.asin));
+
+    // acos command
     this.cmdfns.set("acos", executeUnaryOp(Math.acos));
+
+    // atan command
     this.cmdfns.set("atan", executeUnaryOp(Math.atan));
 
     // conversion functions
+
+    // c_f (Celsius to Fahrenheit) command
     this.cmdfns.set(
       "c_f",
       executeUnaryOp((a) => (a * 9) / 5 + 32)
     );
+
+    // f_c (Farhenheit to Celsius) command
     this.cmdfns.set(
       "f_c",
       executeUnaryOp((a) => ((a - 32) * 5) / 9)
     );
+
     const KILOMETERS_PER_MILE = 1.60934;
+
+    // mi_km (miles to kilometers) command
     this.cmdfns.set(
       "mi_km",
       executeUnaryOp((a) => a * KILOMETERS_PER_MILE)
     );
+
+    // km_mi (kilometers to miles) command
     this.cmdfns.set(
       "km_mi",
       executeUnaryOp((a) => a / KILOMETERS_PER_MILE)
     );
+
     const FEET_PER_METER = 3.28084;
+
+    // m_ft (meters to feet) command
     this.cmdfns.set(
       "m_ft",
       executeUnaryOp((a) => a * FEET_PER_METER)
     );
+
+    // ft_m (feet to meters) command
     this.cmdfns.set(
       "ft_m",
       executeUnaryOp((a) => a / FEET_PER_METER)
@@ -501,15 +568,14 @@ export class CommandInterpreter {
     const clampRGBval = R.pipe(R.clamp(0, 255), Math.round);
 
     // convertToHexString :: number ->string -> string
-    const convertToHexString = (a: number) => (sRGB: string) => {
-      return R.pipe(
+    const convertToHexString = (a: number) =>
+      R.pipe(
         parseFloat,
         (n) => n * a,
         clampRGBval,
         (n) => n.toString(16),
         (s) => (s.length === 1 ? "0" + s : s)
-      )(sRGB);
-    };
+      );
 
     // convertRGB :: number -> string[] -> string
     const convertRGB = (a: number) =>
@@ -537,22 +603,31 @@ export class CommandInterpreter {
     const multiplyParsed = (a: number, s: string): number =>
       R.multiply(a)(parseFloat(s));
 
+    // sum command
     this.cmdfns.set(
       "sum",
       (stck: Stack): Stack => [R.reduce(addParsed, 0)(stck).toString()]
     );
+
+    // prod command
     this.cmdfns.set(
       "prod",
       (stck: Stack): Stack => [R.reduce(multiplyParsed, 1)(stck).toString()]
     );
+
+    // avg command
     this.cmdfns.set("avg", (stck: Stack): Stack => {
       const sum = R.reduce(addParsed, 0)(stck);
       return [(sum / stck.length).toString()];
     });
+
+    // io (iota) command
     this.cmdfns.set("io", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, ...R.map(R.toString)(iota(a + 1))];
     });
+
+    // to command
     this.cmdfns.set("to", (stck: Stack): Stack => {
       const range = (from: number, end: number, step: number): number[] => {
         return to > from
