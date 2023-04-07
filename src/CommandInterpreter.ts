@@ -496,26 +496,20 @@ export class CommandInterpreter {
     this.cmdfns.set("reduce", fold);
 
     // RGB color conversions ---------------------------------------------------
-    
+
     // clampRGB :: number -> number
-    const clampRGB = R.pipe(
-      R.clamp(0, 255),
-      Math.round,
-    );
+    const clampRGB = R.pipe(R.clamp(0, 255), Math.round);
 
     // convertToHex :: string -> string
     const convertToHex = R.pipe(
       parseFloat,
       clampRGB,
       (n) => n.toString(16),
-      (s) => (s.length === 1 ? "0" + s : s),
+      (s) => (s.length === 1 ? "0" + s : s)
     );
 
     // convertRGB :: string[] -> string
-    const convertRGB = R.pipe(
-      R.map(convertToHex),
-      R.reduce(R.concat, "#"),
-    );
+    const convertRGB = R.pipe(R.map(convertToHex), R.reduce(R.concat, "#"));
 
     this.cmdfns.set("rgb", (stck: Stack): Stack => {
       const rgb: string[] = R.takeLast(3)(stck);
