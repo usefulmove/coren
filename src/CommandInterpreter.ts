@@ -524,9 +524,14 @@ export class CommandInterpreter {
     });
 
     // general stack morphisms ------------------------------------------------
+
+    // addParsed :: number -> string -> number
     const addParsed = (a: number, s: string): number => R.add(a)(parseFloat(s));
+
+    // multiplyParsed :: number -> string -> number
     const multiplyParsed = (a: number, s: string): number =>
       R.multiply(a)(parseFloat(s));
+
     this.cmdfns.set(
       "sum",
       (stck: Stack): Stack => [R.reduce(addParsed, 0)(stck).toString()]
