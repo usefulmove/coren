@@ -498,7 +498,10 @@ export class CommandInterpreter {
     // RGB color conversions ---------------------------------------------------
     
     // clampRGB :: number -> number
-    const clampRGB = R.clamp(0)(255);
+    const clampRGB = R.pipe(
+      R.clamp(0, 255),
+      Math.round,
+    );
 
     // convertToHex :: string -> string
     const convertToHex = R.pipe(
@@ -516,7 +519,7 @@ export class CommandInterpreter {
 
     this.cmdfns.set("rgb", (stck: Stack): Stack => {
       const rgb: string[] = R.takeLast(3)(stck);
-      const rest: Stack = R.dropLast(3)(stck);
+      const rest: Stack = R.dropLast(3)(stck) as Stack;
       return [...rest, convertRGB(rgb)];
     });
 
