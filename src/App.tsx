@@ -11,7 +11,7 @@ import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
 const APPNAME = "Coren ( one )";
-const VERSION = "ver. 0.0.9";
+const VERSION = "ver. 0.0.10";
 
 const C = new CommandInterpreter();
 

@@ -495,6 +495,31 @@ export class CommandInterpreter {
     this.cmdfns.set("fold", fold);
     this.cmdfns.set("reduce", fold);
 
+    // RGB color conversions ---------------------------------------------------
+    
+    // clampRGB :: number -> number
+    const clampRGB = R.clamp(0)(255);
+
+    // convertToHex :: string -> string
+    const convertToHex = R.pipe(
+      parseFloat,
+      clampRGB,
+      (n) => n.toString(16),
+      (s) => (s.length === 1 ? "0" + s : s),
+    );
+
+    // convertRGB :: string[] -> string
+    const convertRGB = R.pipe(
+      R.map(convertToHex),
+      R.reduce(R.concat, "#"),
+    );
+
+    this.cmdfns.set("rgb", (stck: Stack): Stack => {
+      const rgb: string[] = R.takeLast(3)(stck);
+      const rest: Stack = R.dropLast(3)(stck);
+      return [...rest, convertRGB(rgb)];
+    });
+
     // general stack morphisms ------------------------------------------------
     const addParsed = (a: number, s: string): number => R.add(a)(parseFloat(s));
     const multiplyParsed = (a: number, s: string): number =>
