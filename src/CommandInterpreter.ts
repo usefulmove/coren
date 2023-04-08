@@ -419,6 +419,7 @@ export class CommandInterpreter {
       (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
     );
     this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
+    this.cmdfns.set("reverse", (stck: Stack): Stack => R.reverse(stck) as Stack);
     this.cmdfns.set("roll", (stck: Stack): Stack => {
       const a = R.last(stck);
       const rest = R.init(stck);
@@ -580,7 +581,7 @@ export class CommandInterpreter {
     const convertRGB = (a: number) =>
       R.pipe(R.map(convertToHexString(a)), R.reduce(R.concat, "#"));
 
-    this.cmdfns.set("rgb", (stck: Stack): Stack => {
+    this.cmdfns.set("rgb_hex", (stck: Stack): Stack => {
       const sRGBarr: string[] = R.takeLast(3)(stck);
       const rest: Stack = R.dropLast(3)(stck) as Stack;
       return [...rest, convertRGB(1)(sRGBarr)];
@@ -591,6 +592,15 @@ export class CommandInterpreter {
       const sRGBarr: string[] = R.takeLast(3)(rest);
       const rest2: Stack = R.dropLast(3)(rest) as Stack;
       return [...rest2, convertRGB(a)(sRGBarr)];
+    });
+
+    this.cmdfns.set("hex_rgb", (stck: Stack): Stack => {
+      const s: string = R.last(stck) ?? "";
+      const rest: Stack = R.init(stck) as Stack;  
+      const hex = s.startsWith("#") ? s.slice(1) : s;
+      const rgb = R.splitEvery(2)(hex);
+      const [r, g, b] = R.map((s: string) => parseInt(s, 16))(rgb);
+      return [...rest, r.toString(), g.toString(), b.toString()];
     });
 
     // general stack morphisms ------------------------------------------------
