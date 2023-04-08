@@ -422,7 +422,10 @@ export class CommandInterpreter {
       (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
     );
     this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
-    this.cmdfns.set("reverse", (stck: Stack): Stack => R.reverse(stck) as Stack);
+    this.cmdfns.set(
+      "reverse",
+      (stck: Stack): Stack => R.reverse(stck) as Stack
+    );
     this.cmdfns.set("roll", (stck: Stack): Stack => {
       const a = R.last(stck);
       const rest = R.init(stck);
@@ -606,7 +609,7 @@ export class CommandInterpreter {
 
     this.cmdfns.set("hex_rgb", (stck: Stack): Stack => {
       const s: string = R.last(stck) ?? "";
-      const rest: Stack = R.init(stck) as Stack;  
+      const rest: Stack = R.init(stck) as Stack;
       const rgbStringArr = R.map(R.toString)(hexToRGB(s));
       return [...rest, ...rgbStringArr];
     });
@@ -619,7 +622,7 @@ export class CommandInterpreter {
         R.transpose,
         R.map(R.mean),
         R.map(R.toString),
-        convertRGB(1),
+        convertRGB(1)
       );
       return [...rest, averageHexRGBString(sarr)];
     });
