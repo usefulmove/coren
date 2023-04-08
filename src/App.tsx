@@ -88,7 +88,7 @@ function App() {
       <Grid item xs={12} sm={10}>
         <TextField
           id="expression"
-          label="expression"
+          label="S-expression"
           variant="outlined"
           color="primary"
           placeholder="Enter an expression"
@@ -174,7 +174,7 @@ function App() {
             target="_blank"
             href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
           >
-            <HelpOutline fontSize="small" sx={{ color: "#666666" }} />
+            <HelpOutline fontSize="small" sx={{ color: "#454545" }} />
           </IconButton>
         </Tooltip>
         <Tooltip title="GitHub" arrow enterDelay={500}>
@@ -182,7 +182,7 @@ function App() {
             target="_blank"
             href="https://github.com/usefulmove/coren/"
           >
-            <GitHub fontSize="small" sx={{ color: "#666666" }} />
+            <GitHub fontSize="small" sx={{ color: "#454545" }} />
           </IconButton>
         </Tooltip>
       </Grid>
