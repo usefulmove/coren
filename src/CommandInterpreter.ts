@@ -25,10 +25,11 @@ type Op = string; // operation
 type Ops = string[]; // operations list
 type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
-const iota: (n: number) => number[] = R.range(1);
+// iota :: number -> number[]
+const iota = R.range(1);
 
 // parseIntBase :: number -> string -> number
-const parseIntBase = R.curry((base, s) => parseInt(s, base));
+const parseIntBase = R.curry(R.flip(parseInt));
 
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.last(stck) ?? "";
@@ -619,11 +620,13 @@ export class CommandInterpreter {
       const rest: Stack = R.dropLast(2)(stck) as Stack;
       const averageHexRGBString = R.pipe(
         R.map(hexToRGB),
+        // @ts-ignore
         R.transpose,
         R.map(R.mean),
         R.map(R.toString),
         convertRGB(1)
       );
+      // @ts-ignore
       return [...rest, averageHexRGBString(sarr)];
     });
 
@@ -669,6 +672,17 @@ export class CommandInterpreter {
       };
       const [rest, from, to, step] = getStackNumber3(stck);
       return [...rest, ...R.map(R.toString)(range(from, to, step))];
+    });
+
+    // cmds command
+    this.cmdfns.set("cmds", (stck: Stack): Stack => {
+      const cmds = [...this.cmdfns.keys()];
+      const formatCmds = R.pipe(
+        R.reject(R.equals(this.userfnStart)),
+        R.sort(R.comparator(R.lt)),
+        R.join(" "),
+      );
+      return [...stck, formatCmds(cmds)];
     });
   }
 }
