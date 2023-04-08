@@ -680,7 +680,7 @@ export class CommandInterpreter {
       const formatCmds = R.pipe(
         R.reject(R.equals(this.userfnStart)),
         R.sort(R.comparator(R.lt)),
-        R.join(" "),
+        R.join(" ")
       );
       return [...stck, formatCmds(cmds)];
     });
