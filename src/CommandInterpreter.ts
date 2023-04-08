@@ -27,6 +27,9 @@ type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
 const iota: (n: number) => number[] = R.range(1);
 
+// parseIntBase :: number -> string -> number
+const parseIntBase = R.curry((base, s) => parseInt(s, base));
+
 const getOp = (stck: Stack): [Op, Stack] => {
   const op: Op = R.last(stck) ?? "";
   const rest: Stack = R.init(stck) as Stack;
@@ -40,7 +43,7 @@ const getStackNumber = (stck: Stack): [Stack, number] => {
 };
 
 const getStackNumberHex = (stck: Stack): [Stack, number] => {
-  const n: number = parseInt(R.last(stck) ?? "0", 16);
+  const n: number = parseIntBase(16)(R.last(stck) ?? "0");
   const rest: Stack = R.init(stck) as Stack;
   return [rest, n];
 };
@@ -490,7 +493,7 @@ export class CommandInterpreter {
       return [...rest, a.toString(16)];
     });
     this.cmdfns.set("hex_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.last(stck) ?? "0", 16);
+      const a: number = parseIntBase(16)(R.last(stck) ?? "0");
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
@@ -499,7 +502,7 @@ export class CommandInterpreter {
       return [...rest, a.toString(2)];
     });
     this.cmdfns.set("bin_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.last(stck) ?? "0", 2);
+      const a: number = parseIntBase(2)(R.last(stck) ?? "0");
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
@@ -508,17 +511,17 @@ export class CommandInterpreter {
       return [...rest, a.toString(8)];
     });
     this.cmdfns.set("oct_dec", (stck: Stack): Stack => {
-      const a: number = parseInt(R.last(stck) ?? "0", 8);
+      const a: number = parseIntBase(8)(R.last(stck) ?? "0");
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];
     });
     this.cmdfns.set("hex_bin", (stck: Stack): Stack => {
-      const a: number = parseInt(R.last(stck) ?? "0", 16);
+      const a: number = parseIntBase(16)(R.last(stck) ?? "0");
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString(2)];
     });
     this.cmdfns.set("bin_hex", (stck: Stack): Stack => {
-      const a: number = parseInt(R.last(stck) ?? "0", 2);
+      const a: number = parseIntBase(2)(R.last(stck) ?? "0");
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString(16)];
     });
@@ -581,7 +584,7 @@ export class CommandInterpreter {
     const hexToRGB = (s: string) => {
       const hex = s.startsWith("#") ? s.slice(1) : s;
       const rgb = R.splitEvery(2)(hex);
-      return R.map((s: string) => parseInt(s, 16))(rgb);
+      return R.map(parseIntBase(16))(rgb);
     };
 
     // convertRGB :: number -> string[] -> string
