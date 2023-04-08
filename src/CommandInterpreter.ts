@@ -130,10 +130,10 @@ export class CommandInterpreter {
         if (functionDepth === 0) {
           instantiated = false; // reset state
           return false; // stop loading (recording)
-        } else {
-          functionDepth -= 1; // decrement function depth
-          return true; // continue loading
         }
+
+        functionDepth -= 1; // decrement function depth
+        return true; // continue loading
       }
 
       if (op === this.userfnStart) {
