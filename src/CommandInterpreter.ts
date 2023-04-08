@@ -421,21 +421,16 @@ export class CommandInterpreter {
       const disc = b * b - 4 * a * c; // discriminant
 
       let real1, imag1, real2, imag2;
-      switch (disc < 0) {
-        case true: {
-          real1 = -b / (2 * a); // r_1 real
-          imag1 = Math.sqrt(-disc) / (2 * a); // r_1 imag
-          real2 = (-b / (2 * a)).toString(); // r_2 real
-          imag2 = (-1 * Math.sqrt(-disc)) / (2 * a); // r_2 imag
-          break;
-        }
-        case false: {
-          real1 = (-b + Math.sqrt(disc)) / (2 * a); // r_1 real
-          imag1 = 0; // r_1 imag
-          real2 = (-b - Math.sqrt(disc)) / (2 * a); // r_2 real
-          imag2 = 0; // r_2 imag
-          break;
-        }
+      if (disc < 0) {
+        real1 = -b / (2 * a); // r_1 real
+        imag1 = Math.sqrt(-disc) / (2 * a); // r_1 imag
+        real2 = (-b / (2 * a)).toString(); // r_2 real
+        imag2 = (-1 * Math.sqrt(-disc)) / (2 * a); // r_2 imag
+      } else {
+        real1 = (-b + Math.sqrt(disc)) / (2 * a); // r_1 real
+        imag1 = 0; // r_1 imag
+        real2 = (-b - Math.sqrt(disc)) / (2 * a); // r_2 real
+        imag2 = 0; // r_2 imag
       }
 
       return [

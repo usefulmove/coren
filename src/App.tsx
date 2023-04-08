@@ -10,7 +10,7 @@ import {
 import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
 
-const APPNAME = "Coren ( one )";
+const APPNAME = "Coren ( . . . )";
 const VERSION = "ver. 0.0.10";
 
 const C = new CommandInterpreter();
@@ -74,7 +74,7 @@ function App() {
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
-        <Typography variant="h5" className="title" color="secondary">
+        <Typography component="span" variant="h5" color="secondary">
           {APPNAME}
         </Typography>
         <Typography
@@ -174,7 +174,7 @@ function App() {
             target="_blank"
             href="https://github.com/usefulmove/coren/blob/main/USAGE.md"
           >
-            <HelpOutline color="secondary" fontSize="small" />
+            <HelpOutline fontSize="small" sx={{ color: "#666666" }} />
           </IconButton>
         </Tooltip>
         <Tooltip title="GitHub" arrow enterDelay={500}>
@@ -182,7 +182,7 @@ function App() {
             target="_blank"
             href="https://github.com/usefulmove/coren/"
           >
-            <GitHub color="secondary" fontSize="small" />
+            <GitHub fontSize="small" sx={{ color: "#666666" }} />
           </IconButton>
         </Tooltip>
       </Grid>
