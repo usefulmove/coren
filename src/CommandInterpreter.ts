@@ -411,50 +411,6 @@ export class CommandInterpreter {
       executeBinaryOp((a, b) => a << b)
     );
 
-    // stack operations
-    this.cmdfns.set("cls", (stck: Stack): Stack => []);
-    this.cmdfns.set("drop", (stck: Stack): Stack => R.init(stck) as Stack);
-    this.cmdfns.set("dropn", (stck: Stack): Stack => {
-      const [rest, a] = getStackNumber(stck);
-      return R.dropLast(a)(rest) as Stack;
-    });
-    this.cmdfns.set(
-      "dup",
-      (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
-    );
-    this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
-    this.cmdfns.set(
-      "reverse",
-      (stck: Stack): Stack => R.reverse(stck) as Stack
-    );
-    this.cmdfns.set("roll", (stck: Stack): Stack => {
-      const a = R.last(stck);
-      const rest = R.init(stck);
-      return [a, ...rest] as Stack;
-    });
-    this.cmdfns.set("rolln", (stck: Stack): Stack => {
-      const [rest, n] = getStackNumber(stck);
-      const top = R.takeLast(n)(rest);
-      const bottom = R.dropLast(n)(rest);
-      return [...top, ...bottom] as Stack;
-    });
-    this.cmdfns.set("rot", (stck: Stack): Stack => {
-      const a = R.head(stck);
-      const rest = R.tail(stck);
-      return [...rest, a] as Stack;
-    });
-    this.cmdfns.set("rotn", (stck: Stack): Stack => {
-      const [rest, n] = getStackNumber(stck);
-      const bottom = R.take(n)(rest);
-      const top = R.drop(n)(rest);
-      return [...top, ...bottom] as Stack;
-    });
-    this.cmdfns.set("swap", (stck: Stack): Stack => {
-      const [a, b] = R.takeLast(2)(stck);
-      const rest: Stack = R.dropLast(2)(stck) as Stack;
-      return [...rest, b, a];
-    });
-
     // simple 3-ary operations ------------------------------------------------
     // take three numbers from the stack and apply a binary operation and return
     // a single number result to the top of stack
@@ -638,6 +594,78 @@ export class CommandInterpreter {
     // multiplyParsed :: number -> string -> number
     const multiplyParsed = (a: number, s: string): number =>
       R.multiply(a)(parseFloat(s));
+
+    // cls command
+    this.cmdfns.set("cls", (stck: Stack): Stack => []);
+
+    // drop, dropn commands
+    this.cmdfns.set("drop", (stck: Stack): Stack => R.init(stck) as Stack);
+    this.cmdfns.set("dropn", (stck: Stack): Stack => {
+      const [rest, a] = getStackNumber(stck);
+      return R.dropLast(a)(rest) as Stack;
+    });
+
+    // dup command
+    this.cmdfns.set(
+      "dup",
+      (stck: Stack): Stack => [...stck, R.last(stck) ?? ""]
+    );
+
+    // rev command
+    this.cmdfns.set("rev", (stck: Stack): Stack => R.reverse(stck) as Stack);
+    this.cmdfns.set(
+      "reverse",
+      (stck: Stack): Stack => R.reverse(stck) as Stack
+    );
+
+    // roll, rolln, rot, rotn commands
+    this.cmdfns.set("roll", (stck: Stack): Stack => {
+      const a = R.last(stck);
+      const rest = R.init(stck);
+      return [a, ...rest] as Stack;
+    });
+    this.cmdfns.set("rolln", (stck: Stack): Stack => {
+      const [rest, n] = getStackNumber(stck);
+      const top = R.takeLast(n)(rest);
+      const bottom = R.dropLast(n)(rest);
+      return [...top, ...bottom] as Stack;
+    });
+    this.cmdfns.set("rot", (stck: Stack): Stack => {
+      const a = R.head(stck);
+      const rest = R.tail(stck);
+      return [...rest, a] as Stack;
+    });
+    this.cmdfns.set("rotn", (stck: Stack): Stack => {
+      const [rest, n] = getStackNumber(stck);
+      const bottom = R.take(n)(rest);
+      const top = R.drop(n)(rest);
+      return [...top, ...bottom] as Stack;
+    });
+
+    // swap command
+    this.cmdfns.set("swap", (stck: Stack): Stack => {
+      const [a, b] = R.takeLast(2)(stck);
+      const rest: Stack = R.dropLast(2)(stck) as Stack;
+      return [...rest, b, a];
+    });
+
+    // head command
+    this.cmdfns.set("head", (stck: Stack): Stack => [R.head(stck)] as Stack);
+
+    // tail command
+    this.cmdfns.set("tail", (stck: Stack): Stack => R.tail(stck));
+
+    // init command
+    this.cmdfns.set("init", (stck: Stack): Stack => R.init(stck));
+
+    // last command
+    this.cmdfns.set("last", (stck: Stack): Stack => [R.last(stck)] as Stack);
+
+    // taken command
+    this.cmdfns.set("taken", (stck: Stack): Stack => {
+      const [rest, a] = getStackNumber(stck);
+      return R.takeLast(a)(rest);
+    });
 
     // sum command
     this.cmdfns.set(
