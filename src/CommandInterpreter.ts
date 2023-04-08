@@ -577,6 +577,13 @@ export class CommandInterpreter {
         (s) => (s.length === 1 ? "0" + s : s)
       );
 
+    // hexToRGB :: string -> number[]
+    const hexToRGB = (s: string) => {
+      const hex = s.startsWith("#") ? s.slice(1) : s;
+      const rgb = R.splitEvery(2)(hex);
+      return R.map((s: string) => parseInt(s, 16))(rgb);
+    };
+
     // convertRGB :: number -> string[] -> string
     const convertRGB = (a: number) =>
       R.pipe(R.map(convertToHexString(a)), R.reduce(R.concat, "#"));
@@ -597,10 +604,21 @@ export class CommandInterpreter {
     this.cmdfns.set("hex_rgb", (stck: Stack): Stack => {
       const s: string = R.last(stck) ?? "";
       const rest: Stack = R.init(stck) as Stack;  
-      const hex = s.startsWith("#") ? s.slice(1) : s;
-      const rgb = R.splitEvery(2)(hex);
-      const [r, g, b] = R.map((s: string) => parseInt(s, 16))(rgb);
-      return [...rest, r.toString(), g.toString(), b.toString()];
+      const rgbStringArr = R.map(R.toString)(hexToRGB(s));
+      return [...rest, ...rgbStringArr];
+    });
+
+    this.cmdfns.set("hex_rgbavg", (stck: Stack): Stack => {
+      const sarr = R.takeLast(2)(stck);
+      const rest: Stack = R.dropLast(2)(stck) as Stack;
+      const averageHexRGBString = R.pipe(
+        R.map(hexToRGB),
+        R.transpose,
+        R.map(R.mean),
+        R.map(R.toString),
+        convertRGB(1),
+      );
+      return [...rest, averageHexRGBString(sarr)];
     });
 
     // general stack morphisms ------------------------------------------------
