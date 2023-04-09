@@ -93,6 +93,13 @@ function App() {
           id="expression"
           label="S-expression"
           variant="outlined"
+          InputProps={{
+            sx: {
+              "& .MuiOutlinedInput-notchedOutline": {
+                borderRadius: 2,
+              },
+            },
+          }}
           color="primary"
           placeholder="Enter an expression"
           sx={{
@@ -114,9 +121,9 @@ function App() {
       <Grid item xs={12} sm={10}>
         <>
           <Typography
-            variant="body1"
+            variant="body2"
             color="primary"
-            sx={{ color: "#666666", fontFamily: "Monospace" }}
+            sx={{ fontFamily: "monospace", color: "#686868" }}
           >
             {outputMessage}
           </Typography>
@@ -133,7 +140,7 @@ function App() {
                 component="span"
                 align="left"
                 sx={{
-                  fontSize: 14,
+                  fontSize: 16,
                   fontFamily: "Monospace",
                   color: (theme) => theme.palette.info.main,
                 }}
@@ -157,13 +164,13 @@ function App() {
         {userCmdList.length > 0 ? (
           <>
             <Typography
-              sx={{ fontSize: 16, color: (theme) => theme.palette.info.main }}
+              sx={{ fontSize: 18, color: (theme) => theme.palette.info.main }}
             >
               custom:
             </Typography>
             {userCmdList.map((cmd) => {
               return (
-                <Typography key={cmd} color="secondary" sx={{ fontSize: 16 }}>
+                <Typography key={cmd} color="secondary" sx={{ fontSize: 18 }}>
                   {cmd}
                 </Typography>
               );

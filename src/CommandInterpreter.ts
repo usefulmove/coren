@@ -72,7 +72,7 @@ const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
 };
 
 export class CommandInterpreter {
-  setMessage: (s: string) => void;
+  setOutputMessage: (s: string) => void;
 
   cmdfns = new Map<string, StackFn>(); // built-in commands
   userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
@@ -154,7 +154,7 @@ export class CommandInterpreter {
     [0, "it is certain"],
     [1, "it is decidedly so"],
     [2, "without a doubt"],
-    [3, "yes definitely"],
+    [3, "yes, definitely"],
     [4, "you may rely on it"],
     [5, "as I see it, yes"],
     [6, "most likely"],
@@ -174,8 +174,8 @@ export class CommandInterpreter {
   ]);
 
   // constructor - create built-in commands
-  constructor(setMessage: (s: string) => void) {
-    this.setMessage = setMessage;
+  constructor(setOutputMessage: (s: string) => void) {
+    this.setOutputMessage = setOutputMessage;
 
     // simple nullary operations -----------------------------------------------
 
@@ -191,7 +191,7 @@ export class CommandInterpreter {
     // magic8 command
     this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
-      setMessage(this.magic8.get(ind) ?? "error");
+      setOutputMessage(this.magic8.get(ind) ?? "error");
       return stck;
     });
 
@@ -203,7 +203,7 @@ export class CommandInterpreter {
         R.sort(R.comparator(R.lt)),
         R.join(" ")
       );
-      setMessage(formatCmds(cmds));
+      setOutputMessage(formatCmds(cmds));
       return stck;
     });
 
