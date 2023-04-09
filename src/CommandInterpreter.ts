@@ -25,6 +25,8 @@ type Op = string; // operation
 type Ops = string[]; // operations list
 type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
+const logConsole = (obj: any) => console.log(obj);
+
 // iota :: number -> number[]
 const iota = R.range(1);
 
@@ -70,6 +72,8 @@ const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
 };
 
 export class CommandInterpreter {
+  setMessage: (s: string) => void;
+
   cmdfns = new Map<string, StackFn>(); // built-in commands
   userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
 
@@ -170,7 +174,9 @@ export class CommandInterpreter {
   ]);
 
   // constructor - create built-in commands
-  constructor() {
+  constructor(setMessage: (s: string) => void) {
+    this.setMessage = setMessage;
+
     // simple nullary operations -----------------------------------------------
 
     // pi command
@@ -185,7 +191,20 @@ export class CommandInterpreter {
     // magic8 command
     this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
-      return [...stck, this.magic8.get(ind) ?? "error"];
+      setMessage(this.magic8.get(ind) ?? "error");
+      return stck;
+    });
+
+    // cmds command
+    this.cmdfns.set("cmds", (stck: Stack): Stack => {
+      const cmds = [...this.cmdfns.keys()];
+      const formatCmds = R.pipe(
+        R.reject(R.equals(this.userfnStart)),
+        R.sort(R.comparator(R.lt)),
+        R.join(" ")
+      );
+      setMessage(formatCmds(cmds));
+      return stck;
     });
 
     // simple unary operations -------------------------------------------------
@@ -695,17 +714,6 @@ export class CommandInterpreter {
       };
       const [rest, from, to, step] = getStackNumber3(stck);
       return [...rest, ...R.map(R.toString)(range(from, to, step))];
-    });
-
-    // cmds command
-    this.cmdfns.set("cmds", (stck: Stack): Stack => {
-      const cmds = [...this.cmdfns.keys()];
-      const formatCmds = R.pipe(
-        R.reject(R.equals(this.userfnStart)),
-        R.sort(R.comparator(R.lt)),
-        R.join(" ")
-      );
-      return [...stck, formatCmds(cmds)];
     });
   }
 }

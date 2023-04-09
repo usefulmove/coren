@@ -13,18 +13,19 @@ import { GitHub, HelpOutline } from "@mui/icons-material";
 const APPNAME = "Coren ( . . . )";
 const VERSION = "ver. 0.0.10";
 
-const C = new CommandInterpreter();
-
 type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-expression
 
 function App() {
   const [outputStack, setOutputStack] = useState<string[]>([]);
+  const [outputMessage, setOutputMessage] = useState("");
   const [inputFieldValue, setInputFieldValue] = useState("");
   const [userCmdList, setUserCmdList] = useState<string[]>([]);
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
+
+  const Coren = new CommandInterpreter(setOutputMessage);
 
   const exprToOps = (expr: Sexpr): Ops =>
     expr
@@ -58,14 +59,16 @@ function App() {
         setCurrentIndex(-1);
       }
 
+      setOutputMessage(""); // clear output message
+
       const expr = (e.target as HTMLInputElement).value;
 
       // evaluate expression and update output stack with result
-      const updateStack = C.evaluateOps(exprToOps(expr));
+      const updateStack = Coren.evaluateOps(exprToOps(expr));
       setOutputStack(updateStack(outputStack));
 
       clearInputField();
-      setUserCmdList(C.getUserCmdNames()); // update user command display
+      setUserCmdList(Coren.getUserCmdNames()); // update user command display
     }
   };
 
@@ -74,7 +77,7 @@ function App() {
   return (
     <Grid container padding={4} spacing={3}>
       <Grid item xs={12}>
-        <Typography component="span" variant="h5" color="secondary">
+        <Typography variant="h5" color="secondary">
           {APPNAME}
         </Typography>
         <Typography
@@ -111,9 +114,16 @@ function App() {
       <Grid item xs={12} sm={10}>
         <>
           <Typography
+            variant="body1"
+            color="primary"
+            sx={{ color: "#666666", fontFamily: "Monospace" }}
+          >
+            {outputMessage}
+          </Typography>
+          <Typography
             variant="subtitle1"
             color="secondary"
-            sx={{ fontFamily: "Monospace" }}
+            sx={{ fontFamily: "Monospace", paddingTop: 2 }}
           >
             {outputStack.length === 0 ? "( stack clear )" : ""}
           </Typography>
