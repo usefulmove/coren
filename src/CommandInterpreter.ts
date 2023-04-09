@@ -25,7 +25,10 @@ type Op = string; // operation
 type Ops = string[]; // operations list
 type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
-const logConsole = (obj: any) => console.log(obj);
+const logConsole = (obj: any) => {
+  console.log(obj);
+  return obj;
+};
 
 // iota :: number -> number[]
 const iota = R.range(1);
@@ -72,12 +75,10 @@ const getStackNumber3Hex = (stck: Stack): [Stack, number, number, number] => {
 };
 
 export class CommandInterpreter {
-  setOutputMessage: (s: string) => void;
-
   cmdfns = new Map<string, StackFn>(); // built-in commands
   userCmdOps = new Map<string, Ops>(); // user-defined and anonymous functions
-
   loadingUserFunction = false;
+  setOutput: (s: string) => void = (s) => null;
 
   // user-defined functions
   public getUserCmdNames = (): string[] => {
@@ -109,6 +110,10 @@ export class CommandInterpreter {
         // unknown (not built-in or user command) - add to stack
         return [...interimStack, op];
       }, stck)(ops);
+
+  public setOutputFn = (fn: (s: string) => void) => {
+    this.setOutput = fn;
+  };
 
   // user-defined functions
   lambdaOp: string = "_";
@@ -174,9 +179,7 @@ export class CommandInterpreter {
   ]);
 
   // constructor - create built-in commands
-  constructor(setOutputMessage: (s: string) => void) {
-    this.setOutputMessage = setOutputMessage;
-
+  constructor() {
     // simple nullary operations -----------------------------------------------
 
     // pi command
@@ -191,19 +194,20 @@ export class CommandInterpreter {
     // magic8 command
     this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
-      setOutputMessage(this.magic8.get(ind) ?? "error");
+      this.setOutput(this.magic8.get(ind) ?? "error");
       return stck;
     });
 
     // cmds command
+    const hiddenCmds = [this.userfnStart, "magic8"];
     this.cmdfns.set("cmds", (stck: Stack): Stack => {
       const cmds = [...this.cmdfns.keys()];
       const formatCmds = R.pipe(
-        R.reject(R.equals(this.userfnStart)),
+        R.reject(R.includes(R.__, hiddenCmds)),
         R.sort(R.comparator(R.lt)),
         R.join(" ")
       );
-      setOutputMessage(formatCmds(cmds));
+      this.setOutput(formatCmds(cmds));
       return stck;
     });
 
@@ -221,58 +225,44 @@ export class CommandInterpreter {
 
     // abs command
     this.cmdfns.set("abs", executeUnaryOp(Math.abs));
-
     // chs command
     this.cmdfns.set(
       "chs",
       executeUnaryOp((a: number) => -a)
     );
-
     // floor command
     this.cmdfns.set("floor", executeUnaryOp(Math.floor));
-
     // ceil command
     this.cmdfns.set("ceil", executeUnaryOp(Math.ceil));
-
     // inv command
     this.cmdfns.set(
       "inv",
       executeUnaryOp((a: number) => 1 / a)
     );
-
     // ln command
     this.cmdfns.set("ln", executeUnaryOp(Math.log));
-
     // log command
     this.cmdfns.set("log", executeUnaryOp(Math.log10));
-
     // log2 command
     this.cmdfns.set("log2", executeUnaryOp(Math.log2));
-
     // log10 command
     this.cmdfns.set("log10", executeUnaryOp(Math.log10));
-
     // rand command
     this.cmdfns.set(
       "rand",
       executeUnaryOp((a) => Math.floor(a * Math.random()))
     );
-
     // round command
     this.cmdfns.set("round", executeUnaryOp(Math.round));
-
     // sgn command
     this.cmdfns.set("sgn", executeUnaryOp(Math.sign));
-
     // sqrt command
     this.cmdfns.set("sqrt", executeUnaryOp(Math.sqrt));
-
     // tng command
     this.cmdfns.set(
       "tng",
       executeUnaryOp((a) => (a * (a + 1)) / 2)
     );
-
     // ! (factorial) command
     this.cmdfns.set(
       "!",
@@ -285,39 +275,29 @@ export class CommandInterpreter {
     const radToDeg = (a: number): number => a * DEG_PER_RAD;
     // degToRad :: number -> number
     const degToRad = (a: number): number => a / DEG_PER_RAD;
-
     // deg_rad command
     this.cmdfns.set("deg_rad", executeUnaryOp(degToRad));
-
     // rad_deg command
     this.cmdfns.set("rad_deg", executeUnaryOp(radToDeg));
-
     // sin command
     this.cmdfns.set("sin", executeUnaryOp(Math.sin));
-
     // cos command
     this.cmdfns.set("cos", executeUnaryOp(Math.cos));
-
     // tan command
     this.cmdfns.set("tan", executeUnaryOp(Math.tan));
-
     // asin command
     this.cmdfns.set("asin", executeUnaryOp(Math.asin));
-
     // acos command
     this.cmdfns.set("acos", executeUnaryOp(Math.acos));
-
     // atan command
     this.cmdfns.set("atan", executeUnaryOp(Math.atan));
 
     // conversion functions
-
     // c_f (Celsius to Fahrenheit) command
     this.cmdfns.set(
       "c_f",
       executeUnaryOp((a) => (a * 9) / 5 + 32)
     );
-
     // f_c (Farhenheit to Celsius) command
     this.cmdfns.set(
       "f_c",
@@ -325,27 +305,22 @@ export class CommandInterpreter {
     );
 
     const KILOMETERS_PER_MILE = 1.60934;
-
     // mi_km (miles to kilometers) command
     this.cmdfns.set(
       "mi_km",
       executeUnaryOp((a) => a * KILOMETERS_PER_MILE)
     );
-
-    // km_mi (kilometers to miles) command
     this.cmdfns.set(
       "km_mi",
       executeUnaryOp((a) => a / KILOMETERS_PER_MILE)
     );
 
     const FEET_PER_METER = 3.28084;
-
     // m_ft (meters to feet) command
     this.cmdfns.set(
       "m_ft",
       executeUnaryOp((a) => a * FEET_PER_METER)
     );
-
     // ft_m (feet to meters) command
     this.cmdfns.set(
       "ft_m",

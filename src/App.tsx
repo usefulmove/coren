@@ -13,6 +13,8 @@ import { GitHub, HelpOutline } from "@mui/icons-material";
 const APPNAME = "Coren ( . . . )";
 const VERSION = "ver. 0.0.10";
 
+const CInterp = new CommandInterpreter();
+
 type Ops = string[]; // operations list
 type Op = string; // operation
 type Sexpr = string; // S-expression
@@ -25,7 +27,7 @@ function App() {
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
 
-  const Coren = new CommandInterpreter(setOutputMessage);
+  CInterp.setOutputFn(setOutputMessage);
 
   const exprToOps = (expr: Sexpr): Ops =>
     expr
@@ -63,12 +65,13 @@ function App() {
 
       const expr = (e.target as HTMLInputElement).value;
 
-      // evaluate expression and update output stack with result
-      const updateStack = Coren.evaluateOps(exprToOps(expr));
-      setOutputStack(updateStack(outputStack));
+      // evaluate expression on current stack and update output stack
+      // transformStack :: Stack -> Stack
+      const transformStack = CInterp.evaluateOps(exprToOps(expr));
+      setOutputStack(transformStack(outputStack));
 
       clearInputField();
-      setUserCmdList(Coren.getUserCmdNames()); // update user command display
+      setUserCmdList(CInterp.getUserCmdNames()); // update user command display
     }
   };
 
