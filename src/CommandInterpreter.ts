@@ -20,6 +20,12 @@ import * as R from "ramda";
   corresponding operations then returns the resulting mutated stack.
 */
 
+const help = `
+Coren is a command interpreter that takes a list of postfix operations and executes them to return the result (for example, '3 2 x' multiplies 3 and 2). The available commands can be displayed by entering "cmds". The detailed Usage Guide can be found by clicking on the question mark icon below.
+`;
+
+console.log({ help });
+
 type Stack = string[]; // stack
 type Op = string; // operation
 type Ops = string[]; // operations list
@@ -187,17 +193,14 @@ export class CommandInterpreter {
       "pi",
       (stck: Stack): Stack => [...stck, Math.PI.toString()]
     );
-
     // e command
     this.cmdfns.set("e", (stck: Stack): Stack => [...stck, Math.E.toString()]);
-
     // magic8 command
     this.cmdfns.set("magic8", (stck: Stack): Stack => {
       const ind = Math.floor(Math.random() * this.magic8.size);
       this.setOutput(this.magic8.get(ind) ?? "error");
       return stck;
     });
-
     // cmds command
     const hiddenCmds = [this.userfnStart, "magic8"];
     this.cmdfns.set("cmds", (stck: Stack): Stack => {
@@ -208,6 +211,11 @@ export class CommandInterpreter {
         R.join(" ")
       );
       this.setOutput(formatCmds(cmds));
+      return stck;
+    });
+    // help
+    this.cmdfns.set("help", (stck: Stack): Stack => {
+      this.setOutput(help);
       return stck;
     });
 
@@ -342,6 +350,7 @@ export class CommandInterpreter {
     this.cmdfns.set("+", executeBinaryOp(R.add));
     this.cmdfns.set("-", executeBinaryOp(R.subtract));
     this.cmdfns.set("x", executeBinaryOp(R.multiply));
+    this.cmdfns.set("*", executeBinaryOp(R.multiply));
     this.cmdfns.set("/", executeBinaryOp(R.divide));
     this.cmdfns.set("%", executeBinaryOp(R.modulo));
     this.cmdfns.set("^", executeBinaryOp(Math.pow));
@@ -669,7 +678,7 @@ export class CommandInterpreter {
     );
 
     // avg command
-    this.cmdfns.set("avg", (stck: Stack): Stack => {
+    this.cmdfns.set("mean", (stck: Stack): Stack => {
       const sum = R.reduce(addParsed, 0)(stck);
       return [(sum / stck.length).toString()];
     });

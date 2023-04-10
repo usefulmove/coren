@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { CommandInterpreter } from "./CommandInterpreter";
 import { GitHub, HelpOutline } from "@mui/icons-material";
+import { InputAdornment } from "@mui/material";
 
 const APPNAME = "Coren ( . . . )";
 const VERSION = "ver. 0.0.10";
@@ -96,15 +97,23 @@ function App() {
           id="expression"
           label="S-expression"
           variant="outlined"
+          color="primary"
+          placeholder="Enter an expression"
+          focused
+          autoFocus
+          value={inputFieldValue}
+          onChange={(e) => setInputFieldValue(e.target.value)}
+          onKeyDown={handleKeyDown}
           InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">exp:</InputAdornment>
+            ),
             sx: {
               "& .MuiOutlinedInput-notchedOutline": {
-                borderRadius: 2,
+                borderRadius: 3,
               },
             },
           }}
-          color="primary"
-          placeholder="Enter an expression"
           sx={{
             input: {
               color: (theme) => theme.palette.secondary.main,
@@ -112,11 +121,6 @@ function App() {
             },
             width: "100%",
           }}
-          focused
-          autoFocus
-          value={inputFieldValue}
-          onChange={(e) => setInputFieldValue(e.target.value)}
-          onKeyDown={handleKeyDown}
         />
       </Grid>
       <Grid item xs={1} sx={{ display: { sx: "none", sm: "block" } }} />
@@ -185,7 +189,8 @@ function App() {
         <Typography
           sx={{ fontSize: 20, color: (theme) => theme.palette.info.main }}
         >
-          ( Refresh page to clear all. Enter `cls` to clear stack. )
+          ( Refresh page to clear all. Enter 'cmds' to list commands and 'cls'
+          to clear stack. )
         </Typography>
       </Grid>
       <Grid item xs={12}>

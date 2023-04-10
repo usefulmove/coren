@@ -13,120 +13,121 @@
 
 ### push onto stack
 ```
-3 4
-  3
+exp: 3 4
   4
+  3
 ```
+Note: The last value '4' is on the top of the stack.
 
 ### drop / dropn
 drop element from the top of the stack
 ```
-3 4 drop
+exp: 3 4 drop
   3
 ```
 drop n elements from the top of the stack
 ```
-1 2 3 4 2 dropn
-  1
+exp: 1 2 3 4 2 dropn
   2
+  1
 ```
 
 ### duplicate (dup)
 duplicate last element
 ```
-3 4 dup
+exp: 3 4 dup
+  4
+  4
   3
-  4
-  4
 ```
 
 ### swap
 reverse order of last two elements
 ```
-1 2 3 4 swap
-  1
-  2
-  4
+exp: 1 2 3 4 swap
   3
+  4
+  2
+  1
 ```
 
 ### clear stack (cls)
-reverse order of last two elements
+clear all elements from the stack
 ```
-1 2 3 4 cls
+exp: 1 2 3 4 cls
 
 ```
 
 ### roll / rolln
 roll stack elements such that the last element becomes the first
 ```
-1 2 3 4 roll
-  4
-  1
-  2
+exp: 1 2 3 4 roll
   3
+  2
+  1
+  4
 ```
 roll stack n times
 ```
-1 2 3 4 2 rolln
-  3
-  4
-  1
+exp: 1 2 3 4 2 rolln
   2
+  1
+  4
+  3
 ```
 
 ### rotate (rot / rotn)
 rotate stack elements such that the first element becomes the last (reverse direction from roll operation)
 ```
-1 2 3 4 rot
-  2
-  3
-  4
+exp: 1 2 3 4 rot
   1
+  4
+  3
+  2
 ```
 rotate stack n times
 ```
-1 2 3 4 2 rotn
-  3
-  4
-  1
+exp: 1 2 3 4 2 rotn
   2
+  1
+  4
+  3
 ```
 
 ### iota (io)
 push an integer range (starting at 1) onto the stack
 ```
-8 io
-  1
-  2
-  3
-  4
-  5
-  6
-  7
+exp: 8 io
   8
+  7
+  6
+  5
+  4
+  3
+  2
+  1
 ```
 
 ### range (to)
 push a number range onto the stack by specifying the range start, end, and step size
 ```
-0 10 2 to
-  0
-  2
-  4
-  6
+exp: 0 10 2 to
+  10
   8
-  10
-```
-```
-20 -10 5 to
-  20
-  15
-  10
-  5
+  6
+  4
+  2
   0
-  -5
+```
+```
+exp: 20 -10 5 to
   -10
+  -5
+  0
+  5
+  10
+  15
+  20
 ```
 
 
@@ -136,7 +137,7 @@ push a number range onto the stack by specifying the range start, end, and step 
 ### store and retrieve
  Values can be stored using generic variables that are not associated with either built-in commands or user-defined functions using the `store` command as shown below.
 ```
-1 2 3 remember_me store 4 5 6 cls remember_me
+exp: 1 2 3 remember_me store 4 5 6 cls remember_me
   3
 ```
 
@@ -146,229 +147,229 @@ push a number range onto the stack by specifying the range start, end, and step 
 
 ### add
 ```
-3 4 +
+exp: 3 4 +
   7
 ```
 
 ### sum (add all)
 ```
-1 2 3 4 sum
+exp: 1 2 3 4 sum
   10
 ```
 
 ### subtract
 ```
-3 4 -
+exp: 3 4 -
   -1
 ```
 
 ### multiply
 ```
-3 4 x
+exp: 3 4 x
   12
 ```
 
 ### product (multiply all)
 ```
-1 2 3 4 prod
+exp: 1 2 3 4 prod
   24
 ```
 
 ### divide
 ```
-3 4 /
+exp: 3 4 /
   0.75
 ```
 
 ### change sign
 ```
-3 chs
+exp: 3 chs
   -3
 ```
 
 ### absolute value
 ```
--3 abs
+exp: -3 abs
   3
 ```
 
 ### round
 ```
-10.2 round
+exp: 10.2 round
   10
 ```
 
 ### floor
 ```
-10.2 floor
+exp: 10.2 floor
   10
 ```
 
 ### ceiling
 ```
-10.2 ceil
+exp: 10.2 ceil
   11
 ```
 
 ### invert (1/x)
 ```
-3 inv
+exp: 3 inv
   0.3333333333333333
 ```
 
 ### square root
 ```
-2 sqrt
+exp: 2 sqrt
   1.4142135623730951
 ```
 
 ### nth root
 ```
-9 2 nroot
+exp: 9 2 nroot
   3
 ```
 
 ### find principal roots
 For this operation, the coefficients `a b c` of the quadratic equation `ax^2 + bx + c = 0` are pushed onto the stack. The real and imaginary components of the principal roots (root1 and root2) of the equation are returned to the stack in the order `real1 imag1 real2 imag2`. The example below finds the roots of the equation `x^2 - 9 = 0`.
 ```
-1 0 -9 proot
-  3
+exp: 1 0 -9 proot
   0
   -3
   0
+  3
 ```
 
 ### exponentiation
 ```
-2 4 ^
+exp: 2 4 ^
   16
 ```
 
 ### modulus
 ```
-5 2 %
+exp: 5 2 %
   1
 ```
 
 ### factorial
 ```
-5 !
+exp: 5 !
   120
 ```
 
 ### greatest common divisor
 ```
-10 55 gcd
+exp: 10 55 gcd
   5
 ```
 
 ### pi
 ```
-pi
+exp: pi
   3.141592653589793
 ```
 
 ### Euler's number (e)
 ```
-e
+exp: e
   2.718281828459045
 ```
 
 ### convert degrees to radians (and reverse)
 ```
-pi 2 /
+exp: pi 2 /
   1.5707963267948966
 
-pi 2 / rad_deg
+exp: pi 2 / rad_deg
   90
 
-90 deg_rad
+exp: 90 deg_rad
   1.5707963267948966
 ```
 
 ### sine / arcsine
 ```
-pi 2 / sin
+exp: pi 2 / sin
   1
 
-pi 2 / sin asin
+exp: pi 2 / sin asin
   1.5707963267948966
 ```
 
 ### cosine / arcosine
 ```
-0 cos
+exp: 0 cos
   1
 
-0 cos acos
+exp: 0 cos acos
   0
 ```
 
 ### tangent / arctangent
 ```
-pi 4 / tan
+exp: pi 4 / tan
   0.9999999999999999
 
-pi 4 / tan atan 4 x
+exp: pi 4 / tan atan 4 x
   3.141592653589793
 ```
 
 ### log (base 10)
 ```
-10 2 ^ log
+exp: 10 2 ^ log
   2
 ```
 
 ### log (base 2)
 ```
-256 log2
+exp: 256 log2
   8
 ```
 
 ### log (base n)
 ```
-256 2 logn
+exp: 256 2 logn
   8
 ```
 
 ### natural log
 ```
-e ln
+exp: e ln
   1
 ```
 
 ### max
 return the maximum of the last two elements on the stack
 ```
-1 2 3 4 max
-  1
-  2
+exp: 1 2 3 4 max
   4
+  2
+  1
 ```
 
 ### min
 return the minimum of the last two elements on the stack
 ```
-1 2 3 4 min
-  1
-  2
+exp: 1 2 3 4 min
   3
+  2
+  1
 ```
 
-### avg
+### mean
 return the average of all elements on the stack
 ```
-1 2 3 4 avg
+exp: 1 2 3 4 mean
   2.5
 ```
 
 ### rand
 read positive integer (n) from stack and returns a random integer in the range 0 to n-1
 ```
-6 rand
+exp: 6 rand
   3
 
-6 rand
+exp: 6 rand
   5
 ```
 
@@ -378,43 +379,43 @@ read positive integer (n) from stack and returns a random integer in the range 0
 
 ### convert between hexadecimal, binary, and decimal
 ```
-c0 hex_dec
+exp: c0 hex_dec
   192
 
-192 dec_hex
+exp: 192 dec_hex
   c0
 
-192 dec_bin
+exp: 192 dec_bin
   1100000
 
-11000000 bin_dec
+exp: 11000000 bin_dec
   192
 
-1100000 bin_hex
+exp: 1100000 bin_hex
   c0
 
-c0 hex_bin
+exp: c0 hex_bin
   11000000
 ```
 
 ### temperature conversion (Fahrenheit, Celsius)
 ```
-212 f_c
+exp: 212 f_c
   100
 ```
 
 ```
-0 c_f
+exp: 0 c_f
   32
 ```
 
 ### length conversion (miles, kilometers) (feet, meters)
 ```
-1 mi_km
+exp: 1 mi_km
   1.609344
 ```
 ```
-1 m_ft
+exp: 1 m_ft
   3.281
 ```
 
@@ -425,11 +426,11 @@ c0 hex_bin
 ### function definition
 User-defined functions can be defined by indicating the start of a function with an open parenthesis `(` symbol followed by the function name then a list of operations and terminated with the close parenthesis `)` symbol. The user function is executed by calling the function name as shown in the examples below.
 ```
-( square dup x ) 16 square
+exp: ( square dup x ) 16 square
   256
 ```
 ```
-( double 2 x ) 250 double
+exp: ( double 2 x ) 250 double
   500
 ```
 
@@ -440,21 +441,21 @@ User-defined functions can be defined by indicating the start of a function with
 ### map
 map an anonymous function to each of the stack elements
 ```
-1 2 3 4 5 ( _ 3 ^ ) map
-  1
-  8
-  27
-  64
+exp: 1 2 3 4 5 ( _ 3 ^ ) map
   125
+  64
+  27
+  8
+  1
 ```
 
-**Note: Commands that manipulate the entire stack (such as `sum`, `prod`, `cls`) cannot be used in anonymous functions passed to higher-order functions.
+Note: Commands that manipulate the entire stack (such as `sum`, `prod`, `cls`) cannot be used in anonymous functions passed to higher-order functions.
 
 ### fold (reduce)
 use an anonymous function to collapse the values on the stack into a single value
 ```
 Compute the sum of the squares of the numbers from 1 to 5.
 
-1 2 3 4 5 ( _ 2 ^ ) map ( _ + ) fold
+exp: 1 2 3 4 5 ( _ 2 ^ ) map ( _ + ) fold
   55
 ```
