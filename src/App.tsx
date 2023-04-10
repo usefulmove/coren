@@ -202,10 +202,10 @@ function App() {
             <HelpOutline fontSize="small" sx={{ color: "#454545" }} />
           </IconButton>
         </Tooltip>
-        <Tooltip title="GitHub" arrow enterDelay={500}>
+        <Tooltip title="GitHub repository" arrow enterDelay={500}>
           <IconButton
             target="_blank"
-            href="https://github.com/usefulmove/coren/"
+            href="https://github.com/usefulmove/coren/\#readme"
           >
             <GitHub fontSize="small" sx={{ color: "#454545" }} />
           </IconButton>
