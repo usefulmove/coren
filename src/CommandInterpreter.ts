@@ -483,11 +483,11 @@ export class CommandInterpreter {
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString(16)];
     });
-    this.cmdfns.set("dec_asc", (stck: Stack): Stack => {
+    this.cmdfns.set("dec_ascii", (stck: Stack): Stack => {
       const [rest, a] = getStackNumber(stck);
       return [...rest, String.fromCharCode(a)];
     });
-    this.cmdfns.set("asc_dec", (stck: Stack): Stack => {
+    this.cmdfns.set("ascii_dec", (stck: Stack): Stack => {
       const a: number = (R.last(stck) ?? "").charCodeAt(0);
       const rest: Stack = R.init(stck) as Stack;
       return [...rest, a.toString()];

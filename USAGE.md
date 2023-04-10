@@ -4,18 +4,29 @@
 - [memory usage](#commands-memory-usage)
 - [maths](#commands-maths)
 - [conversion](#commands-conversion)
+- [binary](#commands-binary)
 - [user-defined functions](#commands-user-defined-functions)
 - [higher-order functions](#commands-higher-order-functions)
 
 
 ---
+## Commands
+
+### show commands
+```
+exp: cmds
+  (list of available commands shown)
+```
+
 ## Commands (stack manipulation)
 
 ### push onto stack
 ```
-exp: 3 4
+exp: 1 2 3 4
   4
   3
+  2
+  1
 ```
 Note: The last value '4' is on the top of the stack.
 
@@ -56,6 +67,15 @@ clear all elements from the stack
 ```
 exp: 1 2 3 4 cls
 
+```
+
+### reverse stack (rev)
+```
+exp: 1 2 3 4 rev
+  1
+  2
+  3
+  4
 ```
 
 ### roll / rolln
@@ -417,6 +437,70 @@ exp: 1 mi_km
 ```
 exp: 1 m_ft
   3.281
+```
+
+### ascii conversion
+```
+exp: a ascii_dec
+  97
+```
+```
+exp: 97 dec_ascii
+  a
+```
+
+### RGB color conversion
+```
+exp: 0 192 255 rgb_hex
+  #00c0ff
+```
+```
+exp: #00c0ff hex_rgb
+  255
+  192
+  0
+```
+
+
+---
+## Commands (binary)
+
+### and (bitwise)
+```
+exp: 2 1 and
+  0
+```
+
+### or (bitwise)
+```
+exp: 2 1 or
+  3
+```
+
+### xor (bitwise)
+```
+exp: 3 5 or
+  6
+```
+```
+exp: 3 3 or
+  0
+```
+
+### bit shift
+```
+exp: 4 2 >>
+  1
+```
+```
+exp: 1 2 <<
+  4
+```
+
+### number of high bits
+```
+exp: 7 ones
+  3
 ```
 
 
