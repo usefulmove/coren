@@ -185,7 +185,7 @@ exp: 3 4 -
 
 ### multiply
 ```
-exp: 3 4 x
+exp: 3 4 *
   12
 ```
 
@@ -510,11 +510,11 @@ exp: 7 ones
 ### function definition
 User-defined functions can be defined by indicating the start of a function with an open parenthesis `(` symbol followed by the function name then a list of operations and terminated with the close parenthesis `)` symbol. The user function is executed by calling the function name as shown in the examples below.
 ```
-exp: ( square dup x ) 16 square
+exp: ( square dup * ) 16 square
   256
 ```
 ```
-exp: ( double 2 x ) 250 double
+exp: ( double 2 * ) 250 double
   500
 ```
 
