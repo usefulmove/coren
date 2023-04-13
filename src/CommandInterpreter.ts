@@ -21,18 +21,21 @@ import * as R from "ramda";
 */
 
 const help = `
-Coren is a command interpreter that takes a list of postfix operations and executes them to return the result (for example, '3 2 x' multiplies 3 and 2). The available commands can be displayed by entering "cmds". The detailed Usage Guide can be found by clicking on the question mark icon below.
+Coren is a command interpreter that takes a list of postfix operations and
+executes them to return the result (for example, '3 2 x' multiplies 3 and 2).
+The available commands can be displayed by entering "cmds". The detailed
+Usage Guide can be found by clicking on the question mark icon below.
 `;
-
-console.log({ help });
 
 type Stack = string[]; // stack
 type Op = string; // operation
 type Ops = string[]; // operations list
 type StackFn = (s: Stack) => Stack; // stack transform functions (morphisms)
 
-const logConsole = (obj: any) => {
-  console.log(obj);
+// logging
+const log = (...args: any[]) => console.log(...args);
+const logIdentity = (msg: string) => (obj: any) => {
+  log(msg, obj);
   return obj;
 };
 
