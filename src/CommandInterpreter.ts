@@ -694,10 +694,10 @@ export class CommandInterpreter {
 
     // to command
     this.cmdfns.set("to", (stck: Stack): Stack => {
-      const range = (from: number, end: number, step: number): number[] => {
+      const range = (from: number, to: number, step: number): number[] => {
         return to > from
-          ? R.unfold((n) => (n <= end ? [n, n + Math.abs(step)] : false), from)
-          : R.unfold((n) => (n >= end ? [n, n - Math.abs(step)] : false), from);
+          ? R.unfold((n) => (n <= to ? [n, n + Math.abs(step)] : false), from)
+          : R.unfold((n) => (n >= to ? [n, n - Math.abs(step)] : false), from);
       };
       const [rest, from, to, step] = getStackNumber3(stck);
       return [...rest, ...R.map(R.toString)(range(from, to, step))];
