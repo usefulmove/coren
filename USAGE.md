@@ -451,11 +451,11 @@ exp: 97 dec_ascii
 
 ### RGB color conversion
 ```
-exp: 0 192 255 rgb_hex
+exp: 0 192 255 rgb_code
   #00c0ff
 ```
 ```
-exp: #00c0ff hex_rgb
+exp: #00c0ff code_rgb
   255
   192
   0

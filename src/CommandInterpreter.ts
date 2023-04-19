@@ -552,27 +552,35 @@ export class CommandInterpreter {
     const convertRGB = (a: number) =>
       R.pipe(R.map(convertToHexString(a)), R.reduce(R.concat, "#"));
 
-    this.cmdfns.set("rgb_hex", (stck: Stack): Stack => {
+    this.cmdfns.set("rgb_code", (stck: Stack): Stack => {
       const sRGBarr: string[] = R.takeLast(3)(stck);
       const rest: Stack = R.dropLast(3)(stck) as Stack;
       return [...rest, convertRGB(1)(sRGBarr)];
     });
 
-    this.cmdfns.set("rgbx", (stck: Stack): Stack => {
-      const [rest, a] = getStackNumber(stck);
-      const sRGBarr: string[] = R.takeLast(3)(rest);
-      const rest2: Stack = R.dropLast(3)(rest) as Stack;
-      return [...rest2, convertRGB(a)(sRGBarr)];
-    });
-
-    this.cmdfns.set("hex_rgb", (stck: Stack): Stack => {
+    this.cmdfns.set("code_rgb", (stck: Stack): Stack => {
       const s: string = R.last(stck) ?? "";
       const rest: Stack = R.init(stck) as Stack;
       const rgbStringArr = R.map(R.toString)(hexToRGB(s));
       return [...rest, ...rgbStringArr];
     });
 
-    this.cmdfns.set("hex_rgbavg", (stck: Stack): Stack => {
+    this.cmdfns.set("rgb_x", (stck: Stack): Stack => {
+      const [rest, n] = getStackNumber(stck);
+      const sRGBarr: string[] = R.takeLast(3)(rest);
+      const rest2: Stack = R.dropLast(3)(rest) as Stack;
+      return [...rest2, convertRGB(n)(sRGBarr)];
+    });
+
+    this.cmdfns.set("code_x", (stck: Stack): Stack => {
+      const [rest, n] = getStackNumber(stck);
+      const s: string = R.last(rest) ?? "";
+      const rest2: Stack = R.init(rest) as Stack;
+      const rgbStringArr = R.map(R.toString)(hexToRGB(s));
+      return [...rest2, convertRGB(n)(rgbStringArr)]
+    });
+
+    this.cmdfns.set("code_avg", (stck: Stack): Stack => {
       const sarr = R.takeLast(2)(stck);
       const rest: Stack = R.dropLast(2)(stck) as Stack;
       const averageHexRGBString = R.pipe(
