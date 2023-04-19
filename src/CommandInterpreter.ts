@@ -528,68 +528,69 @@ export class CommandInterpreter {
 
     // RGB color conversions ---------------------------------------------------
 
-    // clampRGBval :: number -> number
-    const clampRGBval = R.pipe(R.clamp(0, 255), Math.round);
+    // clampRGBvalue :: number -> number
+    const clampRGBvalue = R.pipe(R.clamp(0, 255), Math.round);
 
-    // convertToHexString :: number ->string -> string
+    // convertToHexString :: number -> string -> string
     const convertToHexString = (a: number) =>
       R.pipe(
         parseFloat,
         (n) => n * a,
-        clampRGBval,
+        clampRGBvalue,
         (n) => n.toString(16),
         (s) => (s.length === 1 ? "0" + s : s)
       );
 
-    // hexToRGB :: string -> number[]
-    const hexToRGB = (s: string) => {
+    // colorCodeToRGB :: string -> number[]
+    const colorCodeToRGB = (s: string) => {
       const hex = s.startsWith("#") ? s.slice(1) : s;
       const rgb = R.splitEvery(2)(hex);
       return R.map(parseIntBase(16))(rgb);
     };
 
-    // convertRGB :: number -> string[] -> string
-    const convertRGB = (a: number) =>
+    // multiplyRGBtoCode :: number -> string[] -> string
+    const multiplyRGBtoCode = (a: number) =>
       R.pipe(R.map(convertToHexString(a)), R.reduce(R.concat, "#"));
+    const RGBtoCode = multiplyRGBtoCode(1);
 
     this.cmdfns.set("rgb_code", (stck: Stack): Stack => {
       const sRGBarr: string[] = R.takeLast(3)(stck);
       const rest: Stack = R.dropLast(3)(stck) as Stack;
-      return [...rest, convertRGB(1)(sRGBarr)];
+      return [...rest, RGBtoCode(sRGBarr)];
     });
 
     this.cmdfns.set("code_rgb", (stck: Stack): Stack => {
       const s: string = R.last(stck) ?? "";
       const rest: Stack = R.init(stck) as Stack;
-      const rgbStringArr = R.map(R.toString)(hexToRGB(s));
-      return [...rest, ...rgbStringArr];
+      const sRGBarr = R.map(R.toString)(colorCodeToRGB(s));
+      return [...rest, ...sRGBarr];
     });
 
     this.cmdfns.set("rgb_x", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
       const sRGBarr: string[] = R.takeLast(3)(rest);
       const rest2: Stack = R.dropLast(3)(rest) as Stack;
-      return [...rest2, convertRGB(n)(sRGBarr)];
+      return [...rest2, multiplyRGBtoCode(n)(sRGBarr)];
     });
 
     this.cmdfns.set("code_x", (stck: Stack): Stack => {
       const [rest, n] = getStackNumber(stck);
       const s: string = R.last(rest) ?? "";
       const rest2: Stack = R.init(rest) as Stack;
-      const rgbStringArr = R.map(R.toString)(hexToRGB(s));
-      return [...rest2, convertRGB(n)(rgbStringArr)]
+      const sRGBarr = R.map(R.toString)(colorCodeToRGB(s));
+      return [...rest2, multiplyRGBtoCode(n)(sRGBarr)];
     });
 
     this.cmdfns.set("code_avg", (stck: Stack): Stack => {
       const sarr = R.takeLast(2)(stck);
       const rest: Stack = R.dropLast(2)(stck) as Stack;
       const averageHexRGBString = R.pipe(
-        R.map(hexToRGB),
+        R.map(colorCodeToRGB),
         // @ts-ignore
         R.transpose,
         R.map(R.mean),
         R.map(R.toString),
-        convertRGB(1)
+        RGBtoCode
       );
       // @ts-ignore
       return [...rest, averageHexRGBString(sarr)];
