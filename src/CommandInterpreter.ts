@@ -101,9 +101,9 @@ export class CommandInterpreter {
   public exprToOps = R.pipe(
     // @ts-ignore
     R.split(" "),
-      // @ts-ignore
+    // @ts-ignore
     R.filter(R.identity),
-    R.map(R.toLower),
+    R.map(R.toLower)
   );
 
   executeBuiltInCommand = (op: Op, interimStack: Stack): Stack => {
@@ -135,9 +135,7 @@ export class CommandInterpreter {
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack =>
-      R.reduce((interimStack: Stack, op: Op): Stack => {
-        return this.handleOperation(interimStack, op) as Stack;
-      }, stck)(ops);
+      R.reduce(this.handleOperation, stck)(ops);
 
   public setOutputFn = (fn: (s: string) => void) => {
     this.setOutput = fn;

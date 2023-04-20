@@ -12,7 +12,7 @@ import { GitHub, HelpOutline } from "@mui/icons-material";
 import { InputAdornment } from "@mui/material";
 
 const APPNAME = "Coren ( . . . )";
-const VERSION = "ver. 0.0.10";
+const VERSION = "ver. 0.0.11";
 
 type Ops = string[]; // operations list
 
