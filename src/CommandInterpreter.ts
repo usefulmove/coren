@@ -106,8 +106,8 @@ export class CommandInterpreter {
     R.map(R.toLower)
   );
 
-  executeBuiltInCommand = (op: Op, interimStack: Stack): Stack => {
-    const f = this.cmdfns.get(op);
+  executeBuiltInCommand = (cmd: Op, interimStack: Stack): Stack => {
+    const f = this.cmdfns.get(cmd);
     return f!(interimStack);
   };
 
