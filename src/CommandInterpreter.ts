@@ -95,31 +95,27 @@ export class CommandInterpreter {
     return R.reject((x) => x === this.lambdaOp)(names);
   };
 
-  executeLoadUserFunction = (instance: any, op: Op) => {
-    instance.loadingUserFunction = instance.loadUserFunction(op);
-    return true;
-  };
-
-  executeBuiltInCommand = (instance: any, op: Op, interimStack: Stack) => {
-    const f = instance.cmdfns.get(op);
+  executeBuiltInCommand = (op: Op, interimStack: Stack): Stack => {
+    const f = this.cmdfns.get(op);
     return f!(interimStack);
   };
 
-  executeUserCommand = (instance: any, op: Op, interimStack: Stack) => {
-    const userOps = instance.userCmdOps.get(op)!;
-    const updateStack = instance.evaluateOps(userOps);
+  executeUserCommand = (cmd: Op, interimStack: Stack): Stack => {
+    const userOps = this.userCmdOps.get(cmd)!;
+    const updateStack = this.evaluateOps(userOps);
     return updateStack(interimStack);
   };
 
-  handleOperation = (instance: any, interimStack: Stack, op: Op) => {
-    if (instance.loadingUserFunction) {
-      return instance.executeLoadUserFunction(instance, op) ? [...interimStack] : undefined;
+  handleOperation = (interimStack: Stack, op: Op): Stack => {
+    if (this.loadingUserFunction) {
+      this.loadingUserFunction = this.loadUserFunction(op);
+      return [...interimStack];
     }
-    if (instance.cmdfns.has(op)) {
-      return instance.executeBuiltInCommand(instance, op, interimStack);
+    if (this.cmdfns.has(op)) {
+      return this.executeBuiltInCommand(op, interimStack);
     }
-    if (instance.userCmdOps.has(op)) {
-      return instance.executeUserCommand(instance, op, interimStack);
+    if (this.userCmdOps.has(op)) {
+      return this.executeUserCommand(op, interimStack);
     }
     return [...interimStack, op];
   };
@@ -129,7 +125,7 @@ export class CommandInterpreter {
     (ops: Ops) =>
     (stck: Stack): Stack =>
       R.reduce((interimStack: Stack, op: Op): Stack => {
-        return this.handleOperation(this, interimStack, op);
+        return this.handleOperation(interimStack, op) as Stack;
       }, stck)(ops);
 
   public setOutputFn = (fn: (s: string) => void) => {
