@@ -16,10 +16,6 @@ const VERSION = "ver. 0.0.10";
 
 const CInterp = new CommandInterpreter();
 
-type Ops = string[]; // operations list
-type Op = string; // operation
-type Sexpr = string; // S-expression
-
 function App() {
   const [outputStack, setOutputStack] = useState<string[]>([]);
   const [outputMessage, setOutputMessage] = useState("");
@@ -29,12 +25,6 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(-1);
 
   CInterp.setOutputFn(setOutputMessage);
-
-  const exprToOps = (expr: Sexpr): Ops =>
-    expr
-      .split(" ")
-      .filter((op: Op) => op.length > 0)
-      .map((op) => op.toLowerCase());
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "ArrowUp") {
@@ -68,7 +58,7 @@ function App() {
 
       // evaluate expression on current stack and update output stack
       // transformStack :: Stack -> Stack
-      const transformStack = CInterp.evaluateOps(exprToOps(expr));
+      const transformStack = CInterp.evaluateOps(CInterp.exprToOps(expr));
       setOutputStack(transformStack(outputStack));
 
       clearInputField();

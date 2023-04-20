@@ -27,6 +27,7 @@ The available commands can be displayed by entering "cmds". The detailed
 Usage Guide can be found by clicking on the question mark icon below.
 `;
 
+type Sexpr = string; // S-expression
 type Stack = string[]; // stack
 type Op = string; // operation
 type Ops = string[]; // operations list
@@ -89,11 +90,19 @@ export class CommandInterpreter {
   loadingUserFunction = false;
   setOutput: (s: string) => void = (s) => null;
 
-  // user-defined functions
+  // user-defined function names
+  // getUserCmdNames :: () -> string[]
   public getUserCmdNames = (): string[] => {
     const names = [...this.userCmdOps.keys()];
     return R.reject((x) => x === this.lambdaOp)(names);
   };
+
+  // exprToOps :: Sexpr -> Ops
+  public exprToOps = (expr: Sexpr): Ops =>
+    expr
+      .split(" ")
+      .filter((op: Op) => op.length > 0)
+      .map((op) => op.toLowerCase());
 
   executeBuiltInCommand = (op: Op, interimStack: Stack): Stack => {
     const f = this.cmdfns.get(op);
