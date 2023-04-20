@@ -95,29 +95,41 @@ export class CommandInterpreter {
     return R.reject((x) => x === this.lambdaOp)(names);
   };
 
+  executeLoadUserFunction = (instance: any, op: Op) => {
+    instance.loadingUserFunction = instance.loadUserFunction(op);
+    return true;
+  };
+
+  executeBuiltInCommand = (instance: any, op: Op, interimStack: Stack) => {
+    const f = instance.cmdfns.get(op);
+    return f!(interimStack);
+  };
+
+  executeUserCommand = (instance: any, op: Op, interimStack: Stack) => {
+    const userOps = instance.userCmdOps.get(op)!;
+    const updateStack = instance.evaluateOps(userOps);
+    return updateStack(interimStack);
+  };
+
+  handleOperation = (instance: any, interimStack: Stack, op: Op) => {
+    if (instance.loadingUserFunction) {
+      return instance.executeLoadUserFunction(instance, op) ? [...interimStack] : undefined;
+    }
+    if (instance.cmdfns.has(op)) {
+      return instance.executeBuiltInCommand(instance, op, interimStack);
+    }
+    if (instance.userCmdOps.has(op)) {
+      return instance.executeUserCommand(instance, op, interimStack);
+    }
+    return [...interimStack, op];
+  };
+
   // evaluateOps :: Ops -> Stack -> Stack
   public evaluateOps =
     (ops: Ops) =>
     (stck: Stack): Stack =>
       R.reduce((interimStack: Stack, op: Op): Stack => {
-        // loading user function
-        if (this.loadingUserFunction) {
-          this.loadingUserFunction = this.loadUserFunction(op);
-          return [...interimStack];
-        }
-        // built-in command - run command function on interim stack
-        if (this.cmdfns.has(op)) {
-          const f = this.cmdfns.get(op);
-          return f!(interimStack);
-        }
-        // user function - make recursive call to evaluateOps using stored ops
-        if (this.userCmdOps.has(op)) {
-          const userOps = this.userCmdOps.get(op)!;
-          const updateStack = this.evaluateOps(userOps);
-          return updateStack(interimStack);
-        }
-        // unknown (not built-in or user command) - add to stack
-        return [...interimStack, op];
+        return this.handleOperation(this, interimStack, op);
       }, stck)(ops);
 
   public setOutputFn = (fn: (s: string) => void) => {
