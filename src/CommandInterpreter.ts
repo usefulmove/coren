@@ -98,11 +98,13 @@ export class CommandInterpreter {
   };
 
   // exprToOps :: Sexpr -> Ops
-  public exprToOps = (expr: Sexpr): Ops =>
-    expr
-      .split(" ")
-      .filter((op: Op) => op.length > 0)
-      .map((op) => op.toLowerCase());
+  public exprToOps = R.pipe(
+    // @ts-ignore
+    R.split(" "),
+      // @ts-ignore
+    R.filter(R.identity),
+    R.map(R.toLower),
+  );
 
   executeBuiltInCommand = (op: Op, interimStack: Stack): Stack => {
     const f = this.cmdfns.get(op);

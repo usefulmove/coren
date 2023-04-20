@@ -14,6 +14,8 @@ import { InputAdornment } from "@mui/material";
 const APPNAME = "Coren ( . . . )";
 const VERSION = "ver. 0.0.10";
 
+type Ops = string[]; // operations list
+
 const CInterp = new CommandInterpreter();
 
 function App() {
@@ -58,7 +60,7 @@ function App() {
 
       // evaluate expression on current stack and update output stack
       // transformStack :: Stack -> Stack
-      const transformStack = CInterp.evaluateOps(CInterp.exprToOps(expr));
+      const transformStack = CInterp.evaluateOps(CInterp.exprToOps(expr) as Ops);
       setOutputStack(transformStack(outputStack));
 
       clearInputField();
