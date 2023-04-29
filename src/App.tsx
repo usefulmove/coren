@@ -60,7 +60,9 @@ function App() {
 
       // evaluate expression on current stack and update output stack
       // transformStack :: Stack -> Stack
-      const transformStack = CInterp.evaluateOps(CInterp.exprToOps(expr) as Ops);
+      const transformStack = CInterp.evaluateOps(
+        CInterp.exprToOps(expr) as Ops
+      );
       setOutputStack(transformStack(outputStack));
 
       clearInputField();
@@ -106,6 +108,7 @@ function App() {
               },
             },
           }}
+          inputProps={{ spellCheck: "false" }}
           sx={{
             input: {
               color: (theme) => theme.palette.secondary.main,
