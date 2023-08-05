@@ -1,9 +1,9 @@
 import * as R from "ramda";
 
 /*
-  Note: Base data structure is an array used as a stack. Atoms on the list
-  are either be symbols (commands) or values. Each calculation is a list of
-  operations that are processed in order of occurrence. This is an imple-
+  Note: Base data structure is an array used as a stack. Items on the list
+  are either symbols (commands) or values (atoms). Each calculation is a list
+  of operations that are processed in order of occurrence. This is an imple-
   mentation of a list processor (LISP) for Reverse Polish Notation (RPN)
   S-expressions.
 
