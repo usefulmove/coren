@@ -355,6 +355,18 @@ export class CommandInterpreter {
       executeUnaryOp((a) => a / FEET_PER_METER)
     );
 
+    const POUNDS_PER_KILOGRAM = 2.20462;
+    // kg_lb (kilograms to pounds)
+    this.cmdfns.set(
+      "kg_lb",
+      executeUnaryOp((a) => a * POUNDS_PER_KILOGRAM)
+    );
+    // lb_kg (pounds to kilograms)
+    this.cmdfns.set(
+      "lb_kg",
+      executeUnaryOp((a) => a / POUNDS_PER_KILOGRAM)
+    );
+
     // simple binary operations ------------------------------------------------
     // take two numbers from the stack and apply a binary operation and return
     // a single number result to the top of stack
